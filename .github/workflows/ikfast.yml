@@ -36,6 +36,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      
+      - name: Pull latest changes
+        run: |
+          git pull origin ${{ github.ref_name }}
+      
+      - name: Verify URDF file exists
+        run: |
+          if [ ! -f jobs/current/robot.urdf ]; then
+            echo "ERROR: URDF file not found at jobs/current/robot.urdf"
+            echo "Listing jobs/current directory:"
+            ls -la jobs/current/ || echo "jobs/current directory does not exist"
+            exit 1
+          fi
+          echo "URDF file found:"
+          ls -lh jobs/current/robot.urdf
       
       - name: Validate inputs
         run: |

@@ -39,9 +39,72 @@ class LinkInfoComponent {
      * @private
      */
     async autoFetchLinkInfo() {
-        // Wait a moment for the file to be committed
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        await this.fetchLinkInfo();
+        try {
+            // Step 1: Wait for file to be committed to GitHub
+            this.showStatus('Step 1/3: Waiting for file to be committed...');
+            console.log('Waiting for file to be committed...');
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Step 2: Verify file exists on GitHub
+            this.showStatus('Step 2/3: Verifying file on GitHub...');
+            console.log('Verifying file exists on GitHub...');
+            
+            let fileExists = false;
+            let retries = 0;
+            const maxRetries = 3;
+            
+            while (!fileExists && retries < maxRetries) {
+                fileExists = await this.verifyFileExists();
+                if (!fileExists) {
+                    retries++;
+                    if (retries < maxRetries) {
+                        console.log(`File not found, retry ${retries}/${maxRetries}...`);
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    }
+                }
+            }
+            
+            if (!fileExists) {
+                throw new Error('URDF file not found on GitHub after multiple attempts. Please try uploading again.');
+            }
+            
+            console.log('File verified successfully!');
+            
+            // Step 3: Fetch link info via workflow
+            this.showStatus('Step 3/3: Extracting link information...');
+            console.log('Fetching link info via workflow...');
+            await this.fetchLinkInfo();
+            
+        } catch (error) {
+            console.error('Auto-fetch link info error:', error);
+            this.showError(error.message);
+        }
+    }
+    
+    /**
+     * Show status message
+     * @param {string} message - Status message
+     */
+    showStatus(message) {
+        if (this.elements && this.elements.statusDisplay) {
+            this.elements.statusDisplay.textContent = message;
+            this.elements.statusDisplay.style.display = 'block';
+        }
+        console.log(message);
+    }
+    
+    /**
+     * Verify that the URDF file exists on GitHub
+     * @returns {Promise<boolean>}
+     */
+    async verifyFileExists() {
+        try {
+            const file = await this.githubAPIClient.getFile(CONFIG.URDF_PATH);
+            return file !== null;
+        } catch (error) {
+            console.error('File verification error:', error);
+            return false;
+        }
     }
     
     /**
