@@ -26,11 +26,11 @@ on:
 
 concurrency:
   group: ikfast-generation
-  cancel-in-progress: true  # Cancel old workflows when new one starts
+  cancel-in-progress: true
 
 jobs:
   ikfast:
-    runs-on: ubuntu-latest  # Use latest Ubuntu (24.04)
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     
     steps:
@@ -55,25 +55,6 @@ jobs:
           echo "URDF file found:"
           ls -lh jobs/current/robot.urdf
       
-      - name: Check system and Docker architecture
-        run: |
-          echo "=== System Information ==="
-          uname -a
-          echo ""
-          echo "=== CPU Architecture ==="
-          uname -m
-          echo ""
-          echo "=== Docker Version ==="
-          docker --version
-          echo ""
-          echo "=== Docker Image Information ==="
-          docker pull fishros2/openrave:latest
-          docker image inspect fishros2/openrave:latest | grep -A 5 "Architecture"
-          echo ""
-          echo "=== Test Docker Execution ==="
-          docker run --rm fishros2/openrave uname -a
-          docker run --rm fishros2/openrave bash --version
-      
       - name: Validate inputs
         run: |
           if [ "${{ inputs.mode }}" = "generate" ]; then
@@ -81,7 +62,6 @@ jobs:
               echo "Error: base_link and ee_link are required for generate mode"
               exit 1
             fi
-            # Validate that base_link and ee_link are non-negative integers
             if ! [[ "${{ inputs.base_link }}" =~ ^[0-9]+$ ]]; then
               echo "Error: base_link must be a non-negative integer"
               exit 1
@@ -90,7 +70,6 @@ jobs:
               echo "Error: ee_link must be a non-negative integer"
               exit 1
             fi
-            # Validate that base_link != ee_link
             if [ "${{ inputs.base_link }}" = "${{ inputs.ee_link }}" ]; then
               echo "Error: base_link and ee_link must be different"
               exit 1
@@ -102,15 +81,12 @@ jobs:
         run: |
           mkdir -p outputs
           
-          # Run info mode to extract link information
           docker run --rm \
-            --platform linux/amd64 \
-            -v ${GITHUB_WORKSPACE}:/ws \
-            -w /ws \
+            -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
+            -w ${GITHUB_WORKSPACE} \
             fishros2/openrave \
             bash -c '
               set -e
-              # Source ROS environment
               source /opt/ros/noetic/setup.bash
               
               echo "=== STEP 1: URDF to Collada ==="
@@ -120,36 +96,32 @@ jobs:
               ls -lh robot.dae
               
               echo "=== STEP 3: Extract Link Information ==="
-              openrave-robot.py robot.dae --info links | tee /ws/outputs/links_raw.txt
+              openrave-robot.py robot.dae --info links | tee outputs/links_raw.txt
               
               echo "=== INFO MODE COMPLETE ==="
             ' 2>&1 | tee outputs/info.log
           
-          # Verify outputs were created
           echo "Checking outputs directory:"
           ls -la outputs/
           
           if [ ! -f outputs/links_raw.txt ]; then
             echo "ERROR: links_raw.txt was not created"
-            echo "=== Docker info.log content ==="
             cat outputs/info.log
             exit 1
           fi
           
           echo "=== links_raw.txt content ==="
           cat outputs/links_raw.txt
+
       
       - name: Parse link info to JSON
         if: inputs.mode == 'info'
         run: |
-          echo "Parsing link information..."
-          
           cat > parse_links.py << 'PYEOF'
           import json
           import re
           import sys
           
-          # Read the raw link info
           try:
               with open('outputs/links_raw.txt', 'r') as f:
                   content = f.read()
@@ -158,7 +130,6 @@ jobs:
               sys.exit(1)
           
           print("Raw content length:", len(content))
-          print("First 500 chars:", content[:500])
           
           links = []
           in_link_section = False
@@ -167,27 +138,21 @@ jobs:
           for line in content.split('\n'):
               line = line.strip()
               
-              # Look for header line
               if re.match(r'^name\s+index\s+parent', line, re.IGNORECASE):
                   in_link_section = True
                   header_found = True
-                  print("Found header line:", line)
                   continue
               
-              # Parse link lines after header
               if in_link_section and header_found and line:
-                  # Stop at separator or next section
                   if line.startswith('===') or line.startswith('---'):
                       break
                   
-                  # Parse: "link_name index parent_info"
                   match = re.match(r'^(\S+)\s+(\d+)\s*(.*?)$', line)
                   if match:
                       name = match.group(1)
                       index = int(match.group(2))
                       parent_info = match.group(3).strip()
                       
-                      # Extract parent name
                       parent = None
                       if parent_info:
                           parent_match = re.match(r'^(\S+)\(', parent_info)
@@ -199,46 +164,38 @@ jobs:
                           'index': index,
                           'parent': parent
                       })
-                      print(f"Parsed link: {name} (index {index}, parent: {parent})")
           
           if len(links) == 0:
               print("ERROR: No links were parsed")
               sys.exit(1)
           
-          # Write JSON output
           with open('outputs/links.json', 'w') as f:
               json.dump({'links': links}, f, indent=2)
           
-          print(f"\nSuccessfully parsed {len(links)} links")
+          print(f"Successfully parsed {len(links)} links")
           print(json.dumps({'links': links}, indent=2))
           PYEOF
           
           python3 parse_links.py
           
-          # Verify JSON was created
           if [ ! -f outputs/links.json ]; then
             echo "ERROR: links.json was not created"
             exit 1
           fi
           
-          echo "JSON file created successfully:"
           cat outputs/links.json
-
       
       - name: Run IKFast in Docker (Generate Mode)
         if: inputs.mode == 'generate'
         run: |
           mkdir -p outputs
           
-          # Run full generation pipeline
           docker run --rm \
-            --platform linux/amd64 \
-            -v ${GITHUB_WORKSPACE}:/ws \
-            -w /ws \
+            -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
+            -w ${GITHUB_WORKSPACE} \
             fishros2/openrave \
             bash -c '
               set -e
-              # Source ROS environment
               source /opt/ros/noetic/setup.bash
               
               echo "=== STEP 1: URDF to Collada ==="
@@ -253,14 +210,13 @@ jobs:
                 --iktype=${{ inputs.iktype }} \
                 --baselink=${{ inputs.base_link }} \
                 --eelink=${{ inputs.ee_link }} \
-                --savefile=/ws/outputs/ikfast_solver.cpp
+                --savefile=outputs/ikfast_solver.cpp
               
               echo "=== STEP 4: Verify Output ==="
-              if [ -f /ws/outputs/ikfast_solver.cpp ]; then
-                ls -lh /ws/outputs/ikfast_solver.cpp
-                wc -l /ws/outputs/ikfast_solver.cpp
-                echo "=== STEP 5: Compute Checksum ==="
-                sha256sum /ws/outputs/ikfast_solver.cpp
+              if [ -f outputs/ikfast_solver.cpp ]; then
+                ls -lh outputs/ikfast_solver.cpp
+                wc -l outputs/ikfast_solver.cpp
+                sha256sum outputs/ikfast_solver.cpp
               else
                 echo "ERROR: ikfast_solver.cpp was not generated"
                 exit 1
