@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IKFast Online Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>IKFast Online Generator</h1>
+            <p class="subtitle">在线生成 IKFast 逆运动学求解器</p>
+        </header>
+
+        <main>
+            <!-- Introduction Section -->
+            <section class="intro-section">
+                <h2>平台介绍</h2>
+                <p>IKFast Online Generator 是一个基于 Web 的在线平台，允许您通过浏览器上传 URDF 机器人描述文件，自动生成 IKFast 逆运动学求解器 C++ 代码。</p>
+                <p>该系统利用 GitHub Pages 作为前端托管，GitHub Actions 作为后端计算引擎，在 Docker 容器中执行 OpenRAVE/IKFast 工具链。</p>
+            </section>
+
+            <!-- Instructions Section -->
+            <section class="instructions-section">
+                <h2>使用步骤</h2>
+                <ol>
+                    <li>上传您的 URDF 机器人描述文件</li>
+                    <li>查看自动解析的机器人链接信息</li>
+                    <li>配置 IKFast 参数（基座链接、末端执行器链接、求解器类型）</li>
+                    <li>提交生成任务并监控执行状态</li>
+                    <li>下载生成的求解器代码和日志文件</li>
+                </ol>
+            </section>
+
+            <!-- Authentication Section -->
+            <section class="auth-section" id="auth-section">
+                <h2>GitHub 认证</h2>
+                <div class="form-group">
+                    <label for="github-token">GitHub Personal Access Token:</label>
+                    <input type="password" id="github-token" placeholder="输入您的 GitHub Token">
+                    <button id="auth-button" class="btn btn-primary">验证</button>
+                </div>
+                <p class="help-text">需要 <code>repo</code> 和 <code>workflow</code> 权限</p>
+                <div id="auth-message" class="auth-message" style="display: none;"></div>
+            </section>
+
+            <!-- File Upload Section -->
+            <section class="upload-section">
+                <h2>步骤 1: 上传 URDF 文件</h2>
+                <div class="upload-area">
+                    <div class="upload-controls">
+                        <input type="file" id="file-input" accept=".urdf">
+                        <button id="upload-button" class="btn btn-primary" disabled>上传文件</button>
+                    </div>
+                    <div class="progress-bar" id="upload-progress">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+                <p class="file-info" id="file-info"></p>
+            </section>
+
+            <!-- Link Information Section -->
+            <section class="link-info-section">
+                <h2>步骤 2: 查看链接信息</h2>
+                <div id="link-table-container">
+                    <p class="placeholder">上传 URDF 文件后，链接信息将显示在此处</p>
+                </div>
+            </section>
+
+            <!-- Parameter Configuration Section -->
+            <section class="config-section">
+                <h2>步骤 3: 配置参数</h2>
+                <div class="form-group">
+                    <label for="base-link">
+                        Base Link Index:
+                        <span class="help-icon" title="机器人运动链的基座链接索引。通常是固定在地面或支撑结构上的链接，没有父节点。">?</span>
+                    </label>
+                    <input type="number" id="base-link" min="0" placeholder="基座链接索引">
+                    <span class="help-text">选择机器人运动链的起始链接（通常是根链接）</span>
+                </div>
+                <div class="form-group">
+                    <label for="ee-link">
+                        End Effector Link Index:
+                        <span class="help-icon" title="机器人运动链的末端执行器链接索引。通常是运动链末端的工具或抓手，没有子节点。">?</span>
+                    </label>
+                    <input type="number" id="ee-link" min="0" placeholder="末端执行器链接索引">
+                    <span class="help-text">选择机器人运动链的末端链接（通常是叶子链接）</span>
+                </div>
+                <div class="form-group">
+                    <label for="iktype">
+                        IKFast Solver Type:
+                        <span class="help-icon" title="IKFast 求解器类型决定了逆运动学求解的自由度和约束条件。Transform6D 适用于大多数 6 自由度机械臂。">?</span>
+                    </label>
+                    <select id="iktype">
+                        <option value="transform6d" selected>6D Transform (默认) - 完整的位置和姿态</option>
+                        <option value="translation3d">3D Translation - 仅位置，无姿态约束</option>
+                        <option value="direction3d">3D Direction - 方向向量</option>
+                        <option value="ray4d">4D Ray - 射线（原点+方向）</option>
+                        <option value="lookat3d">3D Look-At - 注视点</option>
+                        <option value="translationdirection5d">5D Translation+Direction - 位置+方向</option>
+                        <option value="translationxy5d">5D Translation XY - XY平面位置+姿态</option>
+                    </select>
+                    <span class="help-text">根据您的机器人类型和应用场景选择合适的求解器类型</span>
+                </div>
+                <button id="submit-button" class="btn btn-success" disabled>生成 IKFast 求解器</button>
+            </section>
+
+            <!-- Status Monitor Section -->
+            <section class="status-section">
+                <h2>步骤 4: 任务状态</h2>
+                <div class="status-display">
+                    <div class="status-indicator" id="status-indicator">
+                        <span class="status-text">未开始</span>
+                    </div>
+                    <p class="status-message" id="status-message"></p>
+                </div>
+            </section>
+
+            <!-- Log Viewer Section -->
+            <section class="log-section">
+                <h2>执行日志</h2>
+                <div class="log-viewer" id="log-viewer">
+                    <pre id="log-content"></pre>
+                </div>
+                <label>
+                    <input type="checkbox" id="auto-scroll" checked>
+                    自动滚动到底部
+                </label>
+            </section>
+
+            <!-- Download Section -->
+            <section class="download-section">
+                <h2>步骤 5: 下载结果</h2>
+                <div class="download-buttons">
+                    <button id="download-solver" class="btn btn-download" disabled>
+                        下载 ikfast_solver.cpp
+                        <span class="file-size" id="solver-size"></span>
+                    </button>
+                    <button id="download-log" class="btn btn-download" disabled>
+                        下载 build.log
+                        <span class="file-size" id="log-size"></span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Error Display Section -->
+            <section class="error-section" id="error-section" style="display: none;">
+                <div class="error-message">
+                    <h3>错误</h3>
+                    <p id="error-text"></p>
+                    <button id="retry-button" class="btn btn-secondary" style="display: none;">重试</button>
+                    <button id="dismiss-error" class="btn btn-secondary">关闭</button>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="faq-section">
+                <h2>常见问题</h2>
+                <details>
+                    <summary>如何获取 GitHub Personal Access Token?</summary>
+                    <p>访问 GitHub Settings → Developer settings → Personal access tokens → Generate new token (classic)，选择 <code>repo</code> 和 <code>workflow</code> 权限。Token 生成后请妥善保管，关闭页面后将无法再次查看。</p>
+                </details>
+                <details>
+                    <summary>支持哪些 URDF 文件格式?</summary>
+                    <p>支持标准的 URDF XML 格式文件，文件大小不超过 10MB。URDF 文件应包含完整的机器人描述，包括链接（links）和关节（joints）定义。建议在上传前使用 <code>check_urdf</code> 工具验证文件格式。</p>
+                </details>
+                <details>
+                    <summary>生成过程需要多长时间?</summary>
+                    <p>通常需要 5-15 分钟，具体取决于机器人的复杂度和当前队列情况。系统设置了 30 分钟的超时限制。如果生成时间过长，可能是机器人结构过于复杂或 IKFast 无法找到解析解。</p>
+                </details>
+                <details>
+                    <summary>如何选择正确的 Base Link 和 End Effector Link?</summary>
+                    <p>Base Link 通常是机器人的固定基座（无父节点，在链接表格中高亮显示为蓝色），End Effector Link 是运动链的末端（通常无子节点，在表格中高亮显示为橙色）。您可以点击链接表格中的行来自动填充索引。确保选择的两个链接之间形成一条连续的运动链。</p>
+                </details>
+                <details>
+                    <summary>什么是 IKType，如何选择?</summary>
+                    <p><strong>Transform6D</strong>（默认）：适用于标准 6 自由度机械臂，求解完整的位置和姿态。<br>
+                    <strong>Translation3D</strong>：仅求解位置，忽略姿态，适用于移动平台或简单的定位任务。<br>
+                    <strong>其他类型</strong>：适用于特殊应用场景，如视觉跟踪（LookAt3D）或平面运动（TranslationXY5D）。大多数情况下使用 Transform6D 即可。</p>
+                </details>
+                <details>
+                    <summary>生成失败了怎么办?</summary>
+                    <p>请检查执行日志中的错误信息。常见问题包括：<br>
+                    • URDF 格式错误或缺少必要的标签<br>
+                    • 选择的链接索引超出范围<br>
+                    • 运动链不是串联结构（IKFast 不支持并联机构）<br>
+                    • 机器人自由度不匹配选择的 IKType<br>
+                    如果问题持续，请检查 URDF 文件是否符合 ROS 标准。</p>
+                </details>
+                <details>
+                    <summary>示例 URDF 文件在哪里?</summary>
+                    <p>您可以从以下来源获取示例 URDF 文件：<br>
+                    • <a href="https://github.com/ros-planning/moveit_resources" target="_blank">MoveIt Resources</a> - 包含多种机器人模型<br>
+                    • <a href="https://github.com/ros-industrial" target="_blank">ROS-Industrial</a> - 工业机器人 URDF<br>
+                    • <a href="https://github.com/ros/urdf_tutorial" target="_blank">URDF Tutorial</a> - 学习示例<br>
+                    建议先使用简单的机器人模型（如 Panda 或 UR5）进行测试。</p>
+                </details>
+                <details>
+                    <summary>生成的代码如何使用?</summary>
+                    <p>下载的 <code>ikfast_solver.cpp</code> 文件需要集成到 MoveIt 配置包中。具体步骤：<br>
+                    1. 将文件复制到您的 MoveIt 配置包的相应目录<br>
+                    2. 更新 <code>kinematics.yaml</code> 配置文件<br>
+                    3. 重新编译您的工作空间<br>
+                    4. 在 MoveIt 中使用 IKFast 插件<br>
+                    详细集成步骤请参考 MoveIt 官方文档。</p>
+                </details>
+                <details>
+                    <summary>为什么需要 GitHub Token?</summary>
+                    <p>本平台使用 GitHub Actions 作为后端计算引擎，需要 Token 来：<br>
+                    • 上传您的 URDF 文件到仓库<br>
+                    • 触发 GitHub Actions 工作流<br>
+                    • 下载生成的结果文件<br>
+                    Token 仅存储在您的浏览器会话中，不会被发送到任何第三方服务器。关闭浏览器后 Token 会自动清除。</p>
+                </details>
+            </section>
+        </main>
+
+        <footer>
+            <p>Powered by GitHub Pages + GitHub Actions + OpenRAVE</p>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="github-api.js"></script>
+    <script src="file-upload.js"></script>
+    <script src="link-info.js"></script>
+    <script src="parameter-config.js"></script>
+    <script src="workflow-trigger.js"></script>
+    <script src="status-monitor.js"></script>
+    <script src="log-viewer.js"></script>
+    <script src="download.js"></script>
+    <script src="error-handler.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

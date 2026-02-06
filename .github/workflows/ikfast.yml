@@ -1,0 +1,150 @@
+name: IKFast Generator
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Execution mode'
+        required: true
+        type: choice
+        options:
+          - info
+          - generate
+      base_link:
+        description: 'Base link index'
+        required: false
+        type: string
+      ee_link:
+        description: 'End effector link index'
+        required: false
+        type: string
+      iktype:
+        description: 'IKFast solver type'
+        required: false
+        type: string
+        default: 'transform6d'
+
+concurrency:
+  group: ikfast-generation
+  cancel-in-progress: false
+
+jobs:
+  ikfast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Validate inputs
+        run: |
+          if [ "${{ inputs.mode }}" = "generate" ]; then
+            if [ -z "${{ inputs.base_link }}" ] || [ -z "${{ inputs.ee_link }}" ]; then
+              echo "Error: base_link and ee_link are required for generate mode"
+              exit 1
+            fi
+            # Validate that base_link and ee_link are non-negative integers
+            if ! [[ "${{ inputs.base_link }}" =~ ^[0-9]+$ ]]; then
+              echo "Error: base_link must be a non-negative integer"
+              exit 1
+            fi
+            if ! [[ "${{ inputs.ee_link }}" =~ ^[0-9]+$ ]]; then
+              echo "Error: ee_link must be a non-negative integer"
+              exit 1
+            fi
+            # Validate that base_link != ee_link
+            if [ "${{ inputs.base_link }}" = "${{ inputs.ee_link }}" ]; then
+              echo "Error: base_link and ee_link must be different"
+              exit 1
+            fi
+          fi
+      
+      - name: Run IKFast in Docker (Info Mode)
+        if: inputs.mode == 'info'
+        run: |
+          mkdir -p outputs
+          
+          # Run info mode to extract link information
+          sudo docker run --rm \
+            -v ${GITHUB_WORKSPACE}:/ws \
+            -w /ws \
+            fishros2/openrave bash -c "
+              set -e
+              {
+                echo '=== STEP 1: URDF to Collada ==='
+                rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
+                
+                echo '=== STEP 2: Verify Collada File ==='
+                ls -lh robot.dae
+                
+                echo '=== STEP 3: Extract Link Information ==='
+                openrave-robot.py robot.dae --info links
+                
+                echo '=== INFO MODE COMPLETE ==='
+              } 2>&1 | tee outputs/info.log
+            "
+      
+      - name: Run IKFast in Docker (Generate Mode)
+        if: inputs.mode == 'generate'
+        run: |
+          mkdir -p outputs
+          
+          # Run full generation pipeline
+          sudo docker run --rm \
+            -v ${GITHUB_WORKSPACE}:/ws \
+            -w /ws \
+            fishros2/openrave bash -c "
+              set -e
+              {
+                echo '=== STEP 1: URDF to Collada ==='
+                rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
+                
+                echo '=== STEP 2: Verify Collada File ==='
+                ls -lh robot.dae
+                
+                echo '=== STEP 3: Generate IKFast Solver ==='
+                python \`openrave-config --python-dir\`/openravepy/_openravepy_/ikfast.py \
+                  --robot=robot.dae \
+                  --iktype=${{ inputs.iktype }} \
+                  --baselink=${{ inputs.base_link }} \
+                  --eelink=${{ inputs.ee_link }} \
+                  --savefile=outputs/ikfast_solver.cpp
+                
+                echo '=== STEP 4: Verify Output ==='
+                if [ -f outputs/ikfast_solver.cpp ]; then
+                  ls -lh outputs/ikfast_solver.cpp
+                  wc -l outputs/ikfast_solver.cpp
+                  echo '=== STEP 5: Compute Checksum ==='
+                  sha256sum outputs/ikfast_solver.cpp
+                else
+                  echo 'ERROR: ikfast_solver.cpp was not generated'
+                  exit 1
+                fi
+                
+                echo '=== GENERATION COMPLETE ==='
+              } 2>&1 | tee outputs/build.log
+            "
+      
+      - name: Verify output file integrity
+        if: inputs.mode == 'generate'
+        run: |
+          if [ ! -f outputs/ikfast_solver.cpp ]; then
+            echo "ERROR: ikfast_solver.cpp file is missing"
+            exit 1
+          fi
+          
+          if [ ! -s outputs/ikfast_solver.cpp ]; then
+            echo "ERROR: ikfast_solver.cpp file is empty (0 bytes)"
+            exit 1
+          fi
+          
+          echo "Output file verification passed"
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ikfast-result
+          path: outputs/
+          retention-days: 7
