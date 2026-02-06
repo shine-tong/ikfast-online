@@ -99,11 +99,69 @@ jobs:
                 ls -lh robot.dae
                 
                 echo '=== STEP 3: Extract Link Information ==='
-                openrave-robot.py robot.dae --info links
+                openrave-robot.py robot.dae --info links | tee outputs/links_raw.txt
                 
                 echo '=== INFO MODE COMPLETE ==='
               } 2>&1 | tee outputs/info.log
             "
+      
+      - name: Parse link info to JSON
+        if: inputs.mode == 'info'
+        run: |
+          python3 << 'EOF'
+          import json
+          import re
+          
+          # Read the raw link info
+          with open('outputs/links_raw.txt', 'r') as f:
+              content = f.read()
+          
+          links = []
+          in_link_section = False
+          header_found = False
+          
+          for line in content.split('\n'):
+              line = line.strip()
+              
+              # Look for header line
+              if re.match(r'^name\s+index\s+parent', line, re.IGNORECASE):
+                  in_link_section = True
+                  header_found = True
+                  continue
+              
+              # Parse link lines after header
+              if in_link_section and header_found and line:
+                  # Stop at separator or next section
+                  if line.startswith('===') or line.startswith('---'):
+                      break
+                  
+                  # Parse: "link_name index parent_info"
+                  match = re.match(r'^(\S+)\s+(\d+)\s*(.*?)$', line)
+                  if match:
+                      name = match.group(1)
+                      index = int(match.group(2))
+                      parent_info = match.group(3).strip()
+                      
+                      # Extract parent name
+                      parent = None
+                      if parent_info:
+                          parent_match = re.match(r'^(\S+)\(', parent_info)
+                          if parent_match:
+                              parent = parent_match.group(1)
+                      
+                      links.append({
+                          'name': name,
+                          'index': index,
+                          'parent': parent
+                      })
+          
+          # Write JSON output
+          with open('outputs/links.json', 'w') as f:
+              json.dump({'links': links}, f, indent=2)
+          
+          print(f"Parsed {len(links)} links")
+          print(json.dumps({'links': links}, indent=2))
+          EOF
       
       - name: Run IKFast in Docker (Generate Mode)
         if: inputs.mode == 'generate'

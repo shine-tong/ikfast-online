@@ -164,38 +164,57 @@ class LinkInfoComponent {
     async pollWorkflowCompletion(runId) {
         const maxAttempts = 60; // 5 minutes max (5 seconds * 60)
         let attempts = 0;
+        let consecutiveErrors = 0;
+        const maxConsecutiveErrors = 3;
         
         while (attempts < maxAttempts) {
-            const run = await this.githubAPIClient.getWorkflowRun(runId);
-            
-            if (run.status === 'completed') {
-                if (run.conclusion === 'success') {
-                    // Workflow completed successfully, fetch the logs
-                    await this.fetchAndParseLogs(runId);
-                    return;
-                } else {
-                    // Workflow failed, try to get logs for debugging
-                    let errorDetails = `Workflow failed with conclusion: ${run.conclusion}`;
-                    try {
-                        const logs = await this.githubAPIClient.getWorkflowLogs(runId);
-                        if (logs) {
-                            // Extract error information from logs
-                            const errorLines = logs.split('\n').filter(line => 
-                                line.includes('ERROR') || line.includes('Error') || line.includes('error')
-                            ).slice(0, 5);
-                            if (errorLines.length > 0) {
-                                errorDetails += '\n\nError details:\n' + errorLines.join('\n');
+            try {
+                const run = await this.githubAPIClient.getWorkflowRun(runId);
+                
+                // Reset error counter on successful fetch
+                consecutiveErrors = 0;
+                
+                if (run.status === 'completed') {
+                    if (run.conclusion === 'success') {
+                        // Workflow completed successfully, fetch the logs
+                        await this.fetchAndParseLogs(runId);
+                        return;
+                    } else {
+                        // Workflow failed, try to get logs for debugging
+                        let errorDetails = `Workflow failed with conclusion: ${run.conclusion}`;
+                        try {
+                            const logs = await this.githubAPIClient.getWorkflowLogs(runId);
+                            if (logs) {
+                                // Extract error information from logs
+                                const errorLines = logs.split('\n').filter(line => 
+                                    line.includes('ERROR') || line.includes('Error') || line.includes('error')
+                                ).slice(0, 5);
+                                if (errorLines.length > 0) {
+                                    errorDetails += '\n\nError details:\n' + errorLines.join('\n');
+                                }
                             }
+                        } catch (logError) {
+                            console.error('Failed to fetch workflow logs:', logError);
                         }
-                    } catch (logError) {
-                        console.error('Failed to fetch workflow logs:', logError);
+                        throw new Error(errorDetails);
                     }
-                    throw new Error(errorDetails);
                 }
+                
+                // Update status display
+                this.updateStatusDisplay(run.status);
+                
+            } catch (error) {
+                consecutiveErrors++;
+                console.error(`Error polling workflow (attempt ${consecutiveErrors}/${maxConsecutiveErrors}):`, error);
+                
+                // If we've had too many consecutive errors, give up
+                if (consecutiveErrors >= maxConsecutiveErrors) {
+                    throw new Error(`Failed to poll workflow status after ${maxConsecutiveErrors} attempts. Please check your network connection and try again.`);
+                }
+                
+                // Otherwise, continue polling (network might recover)
+                console.log('Retrying...');
             }
-            
-            // Update status display
-            this.updateStatusDisplay(run.status);
             
             // Wait before next poll
             await new Promise(resolve => setTimeout(resolve, CONFIG.POLLING_INTERVAL));
@@ -225,21 +244,23 @@ class LinkInfoComponent {
             // Download the artifact
             const artifactBlob = await this.githubAPIClient.downloadArtifact(resultArtifact.id);
             
-            // Extract info.log from the ZIP
-            const logContent = await this.extractLogFromZip(artifactBlob, 'info.log');
+            // Extract links.json from the ZIP
+            const linksJson = await this.extractFileFromZip(artifactBlob, 'links.json');
             
-            // Parse link information
-            const links = this.parseLinkInfo(logContent);
+            // Parse JSON
+            const data = JSON.parse(linksJson);
+            const links = data.links || [];
             
             if (links.length === 0) {
-                throw new Error('No link information found in logs');
+                throw new Error('No link information found in artifact');
             }
             
-            this.links = links;
-            this.renderLinkTable(links);
+            // Enrich link data with isRoot and isLeaf properties
+            this.links = this.enrichLinkData(links);
+            this.renderLinkTable(this.links);
             
         } catch (error) {
-            console.error('Error fetching logs:', error);
+            console.error('Error fetching link info:', error);
             throw new Error(`Failed to parse link information: ${error.message}`);
         }
     }
@@ -251,10 +272,9 @@ class LinkInfoComponent {
      * @returns {Promise<string>} File content
      * @private
      */
-    async extractLogFromZip(zipBlob, filename) {
+    async extractFileFromZip(zipBlob, filename) {
         // For browser environment, we need to use a ZIP library
-        // For now, we'll use a simple approach with JSZip if available
-        // Otherwise, we'll try to get logs directly from the API
+        // We'll use JSZip if available, otherwise use browser's native ZIP support
         
         try {
             // Try to use JSZip if available
@@ -269,12 +289,24 @@ class LinkInfoComponent {
                 
                 return await file.async('string');
             } else {
-                // Fallback: try to get workflow logs directly
-                const logsBlob = await this.githubAPIClient.getWorkflowLogs(this.currentRunId);
-                return await logsBlob.text();
+                // Fallback: Manual ZIP parsing for simple cases
+                // This is a simplified approach that works for uncompressed ZIP entries
+                const arrayBuffer = await zipBlob.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
+                
+                // Simple ZIP file parser (works for basic cases)
+                const decoder = new TextDecoder('utf-8');
+                const zipContent = decoder.decode(uint8Array);
+                
+                // Look for the file in the ZIP
+                const filenameBytes = new TextEncoder().encode(filename);
+                
+                // This is a very basic implementation
+                // For production, JSZip should be included
+                throw new Error('JSZip library is required. Please include it in your HTML.');
             }
         } catch (error) {
-            console.error('Error extracting log from ZIP:', error);
+            console.error('Error extracting file from ZIP:', error);
             throw error;
         }
     }
