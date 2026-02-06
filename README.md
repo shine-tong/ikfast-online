@@ -30,7 +30,7 @@ IKFast Online Generator 是一个零服务器成本的 Web 应用，让机器人
 
 ```
 .
-├── web/                          # 前端静态文件
+├── docs/                         # 前端静态文件（GitHub Pages 部署目录）
 │   ├── index.html               # 主页面
 │   ├── style.css                # 样式文件
 │   ├── config.js                # 配置文件
@@ -81,16 +81,13 @@ cd ikfast-online-generator
 
 #### 2. 配置仓库信息
 
-编辑 `web/config.js`，修改以下配置：
+编辑 `docs/config.js`，修改以下配置：
 
 ```javascript
-export const CONFIG = {
+const CONFIG = {
   REPO_OWNER: 'your-username',           // 替换为您的 GitHub 用户名
   REPO_NAME: 'ikfast-online-generator',  // 替换为您的仓库名称
-  WORKFLOW_FILE: 'ikfast.yml',
-  POLLING_INTERVAL: 5000,
-  MAX_FILE_SIZE: 10 * 1024 * 1024,
-  WORKFLOW_TIMEOUT: 30 * 60 * 1000
+  // ... 其他配置保持不变
 };
 ```
 
@@ -99,9 +96,11 @@ export const CONFIG = {
 1. 进入仓库的 **Settings** → **Pages**
 2. 在 **Source** 下选择：
    - Branch: `main`
-   - Folder: `/web` 或 `/` (root)
+   - Folder: **`/docs`** ⚠️ 必须选择 `/docs`（GitHub Pages 只支持 / 或 /docs）
 3. 点击 **Save**
 4. 等待几分钟，GitHub Pages 将自动部署
+
+> **⚠️ 重要**: GitHub Pages 只支持从 `/ (root)` 或 `/docs` 部署。本项目使用 `/docs` 文件夹。
 
 #### 4. 获取 Personal Access Token
 
@@ -172,6 +171,21 @@ https://your-username.github.io/ikfast-online-generator/
 ## 🔧 故障排除
 
 ### 常见问题
+
+#### ❌ 404 错误 - 页面未找到
+
+**原因**: GitHub Pages 配置的文件夹不正确
+
+**解决方案**:
+1. 进入 **Settings** → **Pages**
+2. 确认 **Folder** 设置为 `/docs`（不是 `/ (root)`）
+3. 如果设置错误，修改后点击 **Save**
+4. 等待 5 分钟后清除浏览器缓存（Ctrl+Shift+R）
+5. 重新访问页面
+
+> **说明**: GitHub Pages 只支持从 `/ (root)` 或 `/docs` 部署。本项目的 `index.html` 在 `docs/` 文件夹中，所以必须选择 `/docs`。
+
+详细的 404 错误修复指南请查看 [TROUBLESHOOTING.md](.github/TROUBLESHOOTING.md)
 
 #### ❌ 上传失败：401 Unauthorized
 
@@ -263,7 +277,7 @@ npm run test:coverage
 
 ```bash
 # 启动本地服务器（需要安装 http-server 或类似工具）
-npx http-server web -p 8080
+npx http-server docs -p 8080
 
 # 访问 http://localhost:8080
 ```

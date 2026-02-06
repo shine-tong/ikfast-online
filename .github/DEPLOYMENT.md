@@ -46,9 +46,11 @@ git push origin main
 4. 在 **Build and deployment** 部分：
    - **Source**: 选择 `Deploy from a branch`
    - **Branch**: 选择 `main`
-   - **Folder**: 选择 `/web` 或 `/ (root)`
+   - **Folder**: **必须选择 `/docs`**（因为 index.html 在 docs 文件夹中）
 5. 点击 **Save** 按钮
 6. 等待几分钟，页面顶部会显示部署地址
+
+**⚠️ 重要提示**: GitHub Pages 只支持从 `/ (root)` 或 `/docs` 部署。本项目使用 `/docs` 文件夹。
 
 #### 方法 B: 使用 GitHub Actions 部署（高级）
 
@@ -96,7 +98,7 @@ jobs:
 
 1. 部署完成后，访问您的 GitHub Pages 地址：
    ```
-   https://your-username.github.io/ikfast-online-generator/
+   https://shine-tong.github.io/ikfast-online/
    ```
 
 2. 检查页面是否正常加载：
@@ -128,14 +130,18 @@ jobs:
 
 **可能原因**:
 - GitHub Pages 未正确启用
-- 分支或文件夹选择错误
+- 文件夹选择错误（最常见）
 - 部署尚未完成
 
 **解决方案**:
-1. 检查 **Settings** → **Pages** 配置
-2. 确认选择了正确的分支（`main`）和文件夹（`/web` 或 `/`）
-3. 等待 5-10 分钟让部署完成
-4. 检查 **Actions** 标签是否有部署工作流运行
+1. 进入仓库的 **Settings** → **Pages**
+2. **确认 Folder 设置为 `/docs`**（不是 `/ (root)`）
+3. 如果设置错误，修改后点击 **Save**
+4. 等待 5-10 分钟让部署完成
+5. 清除浏览器缓存后重新访问
+6. 检查 **Actions** 标签确认部署工作流已完成
+
+**快速检查**: 访问 `https://your-username.github.io/your-repo-name/index.html`，如果能访问说明配置正确。
 
 ### 问题 2: 样式或脚本未加载
 
