@@ -180,7 +180,7 @@ class AuthenticationManager {
         const token = this.elements.tokenInput.value.trim();
         
         if (!token) {
-            this.showError('璇疯緭鍏?GitHub Token');
+            this.showError('Please enter GitHub Token');
             return;
         }
         
@@ -196,7 +196,7 @@ class AuthenticationManager {
             if (result.valid) {
                 this.setToken(token);
                 this.scopes = result.scopes;
-                this.showSuccess('Token 楠岃瘉鎴愬姛');
+                this.showSuccess('Token validated successfully');
                 this.updateUIState();
                 
                 // Trigger custom event for other components
@@ -205,12 +205,12 @@ class AuthenticationManager {
                 }));
             } else {
                 this.clearToken();
-                this.showError(result.error || 'Token 楠岃瘉澶辫触');
+                this.showError(result.error || 'Token validation failed');
                 this.updateUIState();
             }
         } catch (error) {
             this.clearToken();
-            this.showError(`楠岃瘉澶辫触: ${error.message}`);
+            this.showError(`Validation failed: ${error.message}`);
             this.updateUIState();
         } finally {
             // Re-enable button

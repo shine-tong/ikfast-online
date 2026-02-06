@@ -77,7 +77,7 @@ class QuotaWarningComponent {
         if (this.elements.warningDetails) {
             const percentText = Math.round(quotaInfo.percentUsed * 100);
             this.elements.warningDetails.textContent = 
-                `宸蹭娇鐢? ${quotaInfo.totalMinutesUsed} / ${quotaInfo.includedMinutes} 鍒嗛挓 (${percentText}%)`;
+                `Used ? ${quotaInfo.totalMinutesUsed} / ${quotaInfo.includedMinutes} 鍒嗛挓 (${percentText}%)`;
         }
     }
     

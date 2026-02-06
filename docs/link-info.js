@@ -400,11 +400,11 @@ class LinkInfoComponent {
             legend.innerHTML = `
                 <div class="legend-item">
                     <span class="legend-color root-link-color"></span>
-                    <span>Root Link (no parent) - 閫傚悎浣滀负 Base Link</span>
+                    <span>Root Link (no parent) - Suitable as Base Link</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color leaf-link-color"></span>
-                    <span>Leaf Link (no children) - 閫傚悎浣滀负 End Effector Link</span>
+                    <span>Leaf Link (no children) - Suitable as End Effector Link</span>
                 </div>
             `;
             this.elements.linkTable.appendChild(legend);

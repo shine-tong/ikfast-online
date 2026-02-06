@@ -426,7 +426,7 @@ class GitHubAPIClient {
             totalMinutesUsed: usage.totalMinutesUsed,
             includedMinutes: usage.includedMinutes,
             message: shouldWarn 
-                ? `璀﹀憡: GitHub Actions 閰嶉宸蹭娇鐢?${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} 鍒嗛挓)`
+                ? `璀﹀憡: GitHub Actions 閰嶉宸蹭娇鐢?${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} minutes)`
                 : ''
         };
     }
