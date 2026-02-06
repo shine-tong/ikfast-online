@@ -89,6 +89,8 @@ jobs:
             -w /ws \
             fishros2/openrave bash -c "
               set -e
+              # Source ROS environment
+              source /opt/ros/noetic/setup.bash
               {
                 echo '=== STEP 1: URDF to Collada ==='
                 rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
@@ -114,6 +116,8 @@ jobs:
             -w /ws \
             fishros2/openrave bash -c "
               set -e
+              # Source ROS environment
+              source /opt/ros/noetic/setup.bash
               {
                 echo '=== STEP 1: URDF to Collada ==='
                 rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
