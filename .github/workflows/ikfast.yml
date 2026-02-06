@@ -108,7 +108,7 @@ jobs:
       - name: Parse link info to JSON
         if: inputs.mode == 'info'
         run: |
-          python3 << 'EOF'
+          python3 <<'PYTHON_SCRIPT'
           import json
           import re
           
@@ -161,7 +161,7 @@ jobs:
           
           print(f"Parsed {len(links)} links")
           print(json.dumps({'links': links}, indent=2))
-          EOF
+          PYTHON_SCRIPT
       
       - name: Run IKFast in Docker (Generate Mode)
         if: inputs.mode == 'generate'
