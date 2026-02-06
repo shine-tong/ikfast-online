@@ -34,7 +34,8 @@ class WorkflowTriggerComponent {
             
             const result = await this.githubAPIClient.triggerWorkflow(
                 CONFIG.WORKFLOW_FILE,
-                inputs
+                inputs,
+                'master'  // Use master branch
             );
             
             if (result.success) {

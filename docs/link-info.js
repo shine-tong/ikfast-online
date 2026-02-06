@@ -125,7 +125,7 @@ class LinkInfoComponent {
             const result = await this.githubAPIClient.triggerWorkflow(
                 CONFIG.WORKFLOW_FILE,
                 { mode: 'info' },
-                'main'
+                'master'  // Use master branch
             );
             
             if (!result.success) {
