@@ -91,30 +91,48 @@ jobs:
               set -e
               # Source ROS environment
               source /opt/ros/noetic/setup.bash
-              {
-                echo '=== STEP 1: URDF to Collada ==='
-                rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
-                
-                echo '=== STEP 2: Verify Collada File ==='
-                ls -lh robot.dae
-                
-                echo '=== STEP 3: Extract Link Information ==='
-                openrave-robot.py robot.dae --info links | tee outputs/links_raw.txt
-                
-                echo '=== INFO MODE COMPLETE ==='
-              } 2>&1 | tee outputs/info.log
-            "
+              
+              echo '=== STEP 1: URDF to Collada ==='
+              rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
+              
+              echo '=== STEP 2: Verify Collada File ==='
+              ls -lh robot.dae
+              
+              echo '=== STEP 3: Extract Link Information ==='
+              openrave-robot.py robot.dae --info links | tee /ws/outputs/links_raw.txt
+              
+              echo '=== INFO MODE COMPLETE ==='
+            " 2>&1 | tee outputs/info.log
+          
+          # Verify outputs were created
+          echo "Checking outputs directory:"
+          ls -la outputs/
+          
+          if [ ! -f outputs/links_raw.txt ]; then
+            echo "ERROR: links_raw.txt was not created"
+            exit 1
+          fi
       
       - name: Parse link info to JSON
         if: inputs.mode == 'info'
         run: |
+          echo "Parsing link information..."
+          
           cat > parse_links.py << 'PYEOF'
           import json
           import re
+          import sys
           
           # Read the raw link info
-          with open('outputs/links_raw.txt', 'r') as f:
-              content = f.read()
+          try:
+              with open('outputs/links_raw.txt', 'r') as f:
+                  content = f.read()
+          except FileNotFoundError:
+              print("ERROR: outputs/links_raw.txt not found")
+              sys.exit(1)
+          
+          print("Raw content length:", len(content))
+          print("First 500 chars:", content[:500])
           
           links = []
           in_link_section = False
@@ -127,6 +145,7 @@ jobs:
               if re.match(r'^name\s+index\s+parent', line, re.IGNORECASE):
                   in_link_section = True
                   header_found = True
+                  print("Found header line:", line)
                   continue
               
               # Parse link lines after header
@@ -154,16 +173,30 @@ jobs:
                           'index': index,
                           'parent': parent
                       })
+                      print(f"Parsed link: {name} (index {index}, parent: {parent})")
+          
+          if len(links) == 0:
+              print("ERROR: No links were parsed")
+              sys.exit(1)
           
           # Write JSON output
           with open('outputs/links.json', 'w') as f:
               json.dump({'links': links}, f, indent=2)
           
-          print(f"Parsed {len(links)} links")
+          print(f"\nSuccessfully parsed {len(links)} links")
           print(json.dumps({'links': links}, indent=2))
           PYEOF
           
           python3 parse_links.py
+          
+          # Verify JSON was created
+          if [ ! -f outputs/links.json ]; then
+            echo "ERROR: links.json was not created"
+            exit 1
+          fi
+          
+          echo "JSON file created successfully:"
+          cat outputs/links.json
 
       
       - name: Run IKFast in Docker (Generate Mode)
