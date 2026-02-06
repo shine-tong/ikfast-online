@@ -10,8 +10,9 @@ class AuthenticationManager {
         this.isAuthenticated = false;
         this.scopes = [];
         this.tokenKey = 'github_token';
+        this.tokenExpiryKey = 'github_token_expiry';
         
-        // Load token from sessionStorage on initialization
+        // Load token from localStorage on initialization
         this.loadToken();
     }
     
@@ -26,26 +27,49 @@ class AuthenticationManager {
     /**
      * Set and store the token
      * @param {string} token - The GitHub Personal Access Token
+     * @param {number} expiryDays - Number of days until token expires (default: 30)
      */
-    setToken(token) {
+    setToken(token, expiryDays = 30) {
         if (!token || typeof token !== 'string') {
             throw new Error('Token must be a non-empty string');
         }
         
         this.token = token.trim();
-        sessionStorage.setItem(this.tokenKey, this.token);
+        
+        // Store token in localStorage (persists across sessions)
+        localStorage.setItem(this.tokenKey, this.token);
+        
+        // Store expiry date
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + expiryDays);
+        localStorage.setItem(this.tokenExpiryKey, expiryDate.toISOString());
+        
         this.isAuthenticated = true;
     }
     
     /**
-     * Load token from sessionStorage
+     * Load token from localStorage
      * @private
      */
     loadToken() {
-        const storedToken = sessionStorage.getItem(this.tokenKey);
-        if (storedToken) {
-            this.token = storedToken;
-            this.isAuthenticated = true;
+        const storedToken = localStorage.getItem(this.tokenKey);
+        const expiryDate = localStorage.getItem(this.tokenExpiryKey);
+        
+        if (storedToken && expiryDate) {
+            // Check if token has expired
+            const expiry = new Date(expiryDate);
+            const now = new Date();
+            
+            if (now < expiry) {
+                // Token is still valid
+                this.token = storedToken;
+                this.isAuthenticated = true;
+                console.log('Token loaded from storage, expires:', expiry.toLocaleString());
+            } else {
+                // Token has expired, clear it
+                console.log('Token has expired, clearing...');
+                this.clearToken();
+            }
         }
     }
     
@@ -56,7 +80,8 @@ class AuthenticationManager {
         this.token = null;
         this.isAuthenticated = false;
         this.scopes = [];
-        sessionStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.tokenExpiryKey);
     }
     
     /**
@@ -157,7 +182,7 @@ class AuthenticationManager {
                 }
             });
             
-            // Load stored token into input field
+            // Load stored token into input field if exists
             if (this.token) {
                 elements.tokenInput.value = this.token;
             }
@@ -165,6 +190,40 @@ class AuthenticationManager {
         
         // Update UI state
         this.updateUIState();
+        
+        // Auto-validate stored token if exists
+        if (this.token && this.isAuthenticated) {
+            console.log('Auto-validating stored token...');
+            this.validateStoredToken();
+        }
+    }
+    
+    /**
+     * Validate stored token in background
+     * @private
+     */
+    async validateStoredToken() {
+        try {
+            const result = await this.validateToken(this.token);
+            
+            if (result.valid) {
+                this.scopes = result.scopes;
+                console.log('Stored token is valid, scopes:', result.scopes);
+                this.showSuccess('Token loaded successfully');
+                
+                // Trigger event for other components
+                window.dispatchEvent(new CustomEvent('authenticationSuccess', {
+                    detail: { scopes: result.scopes }
+                }));
+            } else {
+                console.log('Stored token is invalid, clearing...');
+                this.clearToken();
+                this.updateUIState();
+            }
+        } catch (error) {
+            console.error('Token validation error:', error);
+            // Don't clear token on network errors, might be temporary
+        }
     }
     
     /**
