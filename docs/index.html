@@ -222,6 +222,15 @@
     </div>
 
     <script src="config.js?v=2"></script>
+    <script>
+        // Ensure CONFIG is loaded before proceeding
+        if (typeof CONFIG === 'undefined') {
+            console.error('CONFIG failed to load!');
+            alert('Configuration failed to load. Please refresh the page.');
+        } else {
+            console.log('CONFIG loaded successfully:', CONFIG.REPO_OWNER, CONFIG.REPO_NAME);
+        }
+    </script>
     <script src="auth.js"></script>
     <script src="github-api.js"></script>
     <script src="file-upload.js"></script>
