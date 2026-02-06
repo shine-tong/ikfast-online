@@ -1,6 +1,6 @@
-﻿/**
+/**
  * QuotaWarningComponent - Displays GitHub Actions quota warnings
- * Non-module version for browser use
+ * ES Module version for testing
  */
 
 class QuotaWarningComponent {

@@ -1,6 +1,6 @@
-﻿/**
+/**
  * FileUploadComponent - Handles URDF file selection, validation, and upload
- * Non-module version for browser use
+ * ES Module version for testing
  */
 
 class FileUploadComponent {

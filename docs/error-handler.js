@@ -1,8 +1,9 @@
-﻿/**
- * Error Handler
+/**
+ * Error Handler Module
  * Provides global error handling, error display, and retry logic
- * Non-module version for direct browser usage
  */
+
+import { NetworkError, GitHubAPIError, ValidationError } from './github-api.module.js';
 
 /**
  * ErrorDisplayComponent - Displays errors to users with appropriate styling
@@ -133,11 +134,11 @@ class GlobalErrorHandler {
     async handleError(error, context = {}) {
         const { operation = 'operation', retry = null } = context;
 
-        if (error.name === 'ValidationError') {
+        if (error instanceof ValidationError) {
             return this.handleValidationError(error);
-        } else if (error.name === 'NetworkError') {
+        } else if (error instanceof NetworkError) {
             return this.handleNetworkError(error, operation, retry);
-        } else if (error.name === 'GitHubAPIError') {
+        } else if (error instanceof GitHubAPIError) {
             return this.handleAPIError(error, operation, retry);
         } else {
             return this.handleUnknownError(error);

@@ -1,6 +1,6 @@
-﻿/**
+/**
  * WorkflowTriggerComponent - Handles GitHub Actions workflow triggering
- * Browser version (non-module)
+ * ES Module version for testing
  */
 
 class WorkflowTriggerComponent {

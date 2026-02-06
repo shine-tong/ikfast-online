@@ -1,6 +1,7 @@
-﻿/**
+/**
  * GitHubAPIClient - Client for interacting with GitHub REST API
  * Handles file uploads, workflow triggers, status monitoring, and artifact downloads
+ * ES Module version for testing
  */
 
 class GitHubAPIClient {

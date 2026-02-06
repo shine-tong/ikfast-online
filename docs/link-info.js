@@ -1,6 +1,7 @@
-﻿/**
+/**
  * LinkInfoComponent - Handles robot link information extraction and display
- * Browser-compatible version (non-module)
+ * Parses OpenRAVE link output and provides UI for link selection
+ * ES Module version for testing
  */
 
 class LinkInfoComponent {
@@ -346,7 +347,7 @@ class LinkInfoComponent {
             
             // Index cell
             const indexCell = document.createElement('td');
-            indexCell.textContent = link.index;
+            indexCell.textContent = String(link.index);
             indexCell.className = 'link-index';
             row.appendChild(indexCell);
             

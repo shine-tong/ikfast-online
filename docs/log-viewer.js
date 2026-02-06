@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LogViewerComponent - Displays real-time workflow execution logs
  * ES Module version for testing
  */

@@ -1,6 +1,6 @@
-﻿/**
+/**
  * ParameterConfigComponent - Handles IKFast parameter configuration
- * Browser version (non-module)
+ * ES Module version for testing
  */
 
 class ParameterConfigComponent {

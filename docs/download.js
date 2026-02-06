@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DownloadComponent - Handles artifact download and file extraction
  * ES Module version for testing
  */

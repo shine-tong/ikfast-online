@@ -1,6 +1,7 @@
-﻿/**
+/**
  * AuthenticationManager - Manages GitHub API authentication
  * Handles token storage, validation, and UI for token input
+ * ES Module version for testing
  */
 
 class AuthenticationManager {
@@ -186,7 +187,7 @@ class AuthenticationManager {
         // Disable button and show loading state
         if (this.elements.authButton) {
             this.elements.authButton.disabled = true;
-            this.elements.authButton.textContent = '楠岃瘉涓?..';
+            this.elements.authButton.textContent = 'Authenticating...';
         }
         
         try {
@@ -215,7 +216,7 @@ class AuthenticationManager {
             // Re-enable button
             if (this.elements.authButton) {
                 this.elements.authButton.disabled = false;
-                this.elements.authButton.textContent = '楠岃瘉';
+                this.elements.authButton.textContent = 'Authenticate';
             }
         }
     }
@@ -233,7 +234,7 @@ class AuthenticationManager {
                 this.elements.authSection.classList.add('authenticated');
             }
             if (this.elements.authButton) {
-                this.elements.authButton.textContent = '宸查獙璇?;
+                this.elements.authButton.textContent = 'Authenticated';
                 this.elements.authButton.classList.add('authenticated');
             }
         } else {
@@ -242,7 +243,7 @@ class AuthenticationManager {
                 this.elements.authSection.classList.remove('authenticated');
             }
             if (this.elements.authButton) {
-                this.elements.authButton.textContent = '楠岃瘉';
+                this.elements.authButton.textContent = 'Authenticate';
                 this.elements.authButton.classList.remove('authenticated');
             }
         }

@@ -1,6 +1,6 @@
-﻿/**
+/**
  * FileVerification - Utility for verifying file integrity
- * Non-module version for browser use
+ * ES Module version for testing
  */
 
 class FileVerification {
