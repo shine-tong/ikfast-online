@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Configuration constants for IKFast Online Generator
  */
 
@@ -29,38 +29,38 @@ const CONFIG = {
     IKTYPE_OPTIONS: [
         {
             value: 'transform6d',
-            label: '6D Transform (默认)',
-            description: '完整的位置和姿态'
+            label: '6D Transform (榛樿)',
+            description: '瀹屾暣鐨勪綅缃拰濮挎€?
         },
         {
             value: 'translation3d',
             label: '3D Translation',
-            description: '仅位置，无姿态约束'
+            description: '浠呬綅缃紝鏃犲Э鎬佺害鏉?
         },
         {
             value: 'direction3d',
             label: '3D Direction',
-            description: '方向向量'
+            description: '鏂瑰悜鍚戦噺'
         },
         {
             value: 'ray4d',
             label: '4D Ray',
-            description: '射线（原点+方向）'
+            description: '灏勭嚎锛堝師鐐?鏂瑰悜锛?
         },
         {
             value: 'lookat3d',
             label: '3D Look-At',
-            description: '注视点'
+            description: '娉ㄨ鐐?
         },
         {
             value: 'translationdirection5d',
             label: '5D Translation+Direction',
-            description: '位置+方向'
+            description: '浣嶇疆+鏂瑰悜'
         },
         {
             value: 'translationxy5d',
             label: '5D Translation XY',
-            description: 'XY平面位置+姿态'
+            description: 'XY骞抽潰浣嶇疆+濮挎€?
         }
     ],
     
@@ -83,27 +83,27 @@ const CONFIG = {
     
     // Error Messages
     ERROR_MESSAGES: {
-        INVALID_FILE_EXTENSION: '文件扩展名必须为 .urdf',
-        FILE_TOO_LARGE: '文件大小超过 10MB 限制',
-        INVALID_XML: '文件不是有效的 XML 格式',
-        NETWORK_ERROR: '网络连接失败，请检查网络后重试',
-        AUTH_FAILED: '认证失败，请检查 Token 权限',
-        PERMISSION_DENIED: '权限不足或 API 速率限制',
-        RESOURCE_NOT_FOUND: '资源未找到，请检查仓库配置',
-        INVALID_PARAMETERS: '参数验证失败，请检查输入',
-        WORKFLOW_TIMEOUT: '工作流执行超时（30分钟）',
-        ARTIFACT_NOT_FOUND: 'Artifact 未找到，工作流可能未成功完成',
-        UNKNOWN_ERROR: '发生未知错误，请查看控制台日志'
+        INVALID_FILE_EXTENSION: '鏂囦欢鎵╁睍鍚嶅繀椤讳负 .urdf',
+        FILE_TOO_LARGE: '鏂囦欢澶у皬瓒呰繃 10MB 闄愬埗',
+        INVALID_XML: '鏂囦欢涓嶆槸鏈夋晥鐨?XML 鏍煎紡',
+        NETWORK_ERROR: '缃戠粶杩炴帴澶辫触锛岃妫€鏌ョ綉缁滃悗閲嶈瘯',
+        AUTH_FAILED: '璁よ瘉澶辫触锛岃妫€鏌?Token 鏉冮檺',
+        PERMISSION_DENIED: '鏉冮檺涓嶈冻鎴?API 閫熺巼闄愬埗',
+        RESOURCE_NOT_FOUND: '璧勬簮鏈壘鍒帮紝璇锋鏌ヤ粨搴撻厤缃?,
+        INVALID_PARAMETERS: '鍙傛暟楠岃瘉澶辫触锛岃妫€鏌ヨ緭鍏?,
+        WORKFLOW_TIMEOUT: '宸ヤ綔娴佹墽琛岃秴鏃讹紙30鍒嗛挓锛?,
+        ARTIFACT_NOT_FOUND: 'Artifact 鏈壘鍒帮紝宸ヤ綔娴佸彲鑳芥湭鎴愬姛瀹屾垚',
+        UNKNOWN_ERROR: '鍙戠敓鏈煡閿欒锛岃鏌ョ湅鎺у埗鍙版棩蹇?
     },
     
     // Status Messages
     STATUS_MESSAGES: {
-        NOT_STARTED: '未开始',
-        QUEUED: '排队中',
-        IN_PROGRESS: '执行中',
-        COMPLETED: '已完成',
-        FAILED: '失败',
-        CANCELLED: '已取消'
+        NOT_STARTED: '鏈紑濮?,
+        QUEUED: '鎺掗槦涓?,
+        IN_PROGRESS: '鎵ц涓?,
+        COMPLETED: '宸插畬鎴?,
+        FAILED: '澶辫触',
+        CANCELLED: '宸插彇娑?
     },
     
     // GitHub API Endpoints
@@ -129,3 +129,8 @@ Object.freeze(CONFIG.IKTYPE_OPTIONS);
 Object.freeze(CONFIG.ERROR_MESSAGES);
 Object.freeze(CONFIG.STATUS_MESSAGES);
 Object.freeze(CONFIG.API_ENDPOINTS);
+
+// Make CONFIG available globally
+if (typeof window !== 'undefined') {
+    window.CONFIG = CONFIG;
+}
