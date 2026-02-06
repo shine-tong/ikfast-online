@@ -180,23 +180,11 @@ class LinkInfoComponent {
                         await this.fetchAndParseLogs(runId);
                         return;
                     } else {
-                        // Workflow failed, try to get logs for debugging
-                        let errorDetails = `Workflow failed with conclusion: ${run.conclusion}`;
-                        try {
-                            const logs = await this.githubAPIClient.getWorkflowLogs(runId);
-                            if (logs) {
-                                // Extract error information from logs
-                                const errorLines = logs.split('\n').filter(line => 
-                                    line.includes('ERROR') || line.includes('Error') || line.includes('error')
-                                ).slice(0, 5);
-                                if (errorLines.length > 0) {
-                                    errorDetails += '\n\nError details:\n' + errorLines.join('\n');
-                                }
-                            }
-                        } catch (logError) {
-                            console.error('Failed to fetch workflow logs:', logError);
-                        }
-                        throw new Error(errorDetails);
+                        // Workflow failed - don't try to fetch logs (causes CORS error)
+                        // Instead, provide a link to view logs on GitHub
+                        const errorMessage = `Workflow failed with conclusion: ${run.conclusion}\n\n` +
+                            `Please check the workflow logs on GitHub:\n${run.htmlUrl}`;
+                        throw new Error(errorMessage);
                     }
                 }
                 
