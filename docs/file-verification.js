@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FileVerification - Utility for verifying file integrity
  * Non-module version for browser use
  */

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AuthenticationManager - Manages GitHub API authentication
  * Handles token storage, validation, and UI for token input
  * ES Module version for testing
@@ -180,14 +180,14 @@ export class AuthenticationManager {
         const token = this.elements.tokenInput.value.trim();
         
         if (!token) {
-            this.showError('请输入 GitHub Token');
+            this.showError('璇疯緭鍏?GitHub Token');
             return;
         }
         
         // Disable button and show loading state
         if (this.elements.authButton) {
             this.elements.authButton.disabled = true;
-            this.elements.authButton.textContent = '验证中...';
+            this.elements.authButton.textContent = '楠岃瘉涓?..';
         }
         
         try {
@@ -196,7 +196,7 @@ export class AuthenticationManager {
             if (result.valid) {
                 this.setToken(token);
                 this.scopes = result.scopes;
-                this.showSuccess('Token 验证成功');
+                this.showSuccess('Token 楠岃瘉鎴愬姛');
                 this.updateUIState();
                 
                 // Trigger custom event for other components
@@ -205,18 +205,18 @@ export class AuthenticationManager {
                 }));
             } else {
                 this.clearToken();
-                this.showError(result.error || 'Token 验证失败');
+                this.showError(result.error || 'Token 楠岃瘉澶辫触');
                 this.updateUIState();
             }
         } catch (error) {
             this.clearToken();
-            this.showError(`验证失败: ${error.message}`);
+            this.showError(`楠岃瘉澶辫触: ${error.message}`);
             this.updateUIState();
         } finally {
             // Re-enable button
             if (this.elements.authButton) {
                 this.elements.authButton.disabled = false;
-                this.elements.authButton.textContent = '验证';
+                this.elements.authButton.textContent = '楠岃瘉';
             }
         }
     }
@@ -234,7 +234,7 @@ export class AuthenticationManager {
                 this.elements.authSection.classList.add('authenticated');
             }
             if (this.elements.authButton) {
-                this.elements.authButton.textContent = '已验证';
+                this.elements.authButton.textContent = '宸查獙璇?;
                 this.elements.authButton.classList.add('authenticated');
             }
         } else {
@@ -243,7 +243,7 @@ export class AuthenticationManager {
                 this.elements.authSection.classList.remove('authenticated');
             }
             if (this.elements.authButton) {
-                this.elements.authButton.textContent = '验证';
+                this.elements.authButton.textContent = '楠岃瘉';
                 this.elements.authButton.classList.remove('authenticated');
             }
         }

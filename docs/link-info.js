@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LinkInfoComponent - Handles robot link information extraction and display
  * Browser-compatible version (non-module)
  */
@@ -399,11 +399,11 @@ class LinkInfoComponent {
             legend.innerHTML = `
                 <div class="legend-item">
                     <span class="legend-color root-link-color"></span>
-                    <span>Root Link (no parent) - 适合作为 Base Link</span>
+                    <span>Root Link (no parent) - 閫傚悎浣滀负 Base Link</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color leaf-link-color"></span>
-                    <span>Leaf Link (no children) - 适合作为 End Effector Link</span>
+                    <span>Leaf Link (no children) - 閫傚悎浣滀负 End Effector Link</span>
                 </div>
             `;
             this.elements.linkTable.appendChild(legend);
@@ -466,7 +466,7 @@ class LinkInfoComponent {
         
         if (this.elements && this.elements.fetchButton) {
             this.elements.fetchButton.disabled = show;
-            this.elements.fetchButton.textContent = show ? '获取中...' : '获取链接信息';
+            this.elements.fetchButton.textContent = show ? '鑾峰彇涓?..' : '鑾峰彇閾炬帴淇℃伅';
         }
     }
     
@@ -478,7 +478,7 @@ class LinkInfoComponent {
     updateStatusDisplay(status) {
         if (this.elements && this.elements.statusDisplay) {
             const statusText = CONFIG.STATUS_MESSAGES[status.toUpperCase()] || status;
-            this.elements.statusDisplay.textContent = `状态: ${statusText}`;
+            this.elements.statusDisplay.textContent = `鐘舵€? ${statusText}`;
             this.elements.statusDisplay.style.display = 'block';
         }
     }

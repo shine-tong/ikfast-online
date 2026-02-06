@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FileVerification - Utility for verifying file integrity
  * ES Module version for testing
  */

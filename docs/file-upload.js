@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FileUploadComponent - Handles URDF file selection, validation, and upload
  * Non-module version for browser use
  */
@@ -61,7 +61,7 @@ class FileUploadComponent {
         
         // Display file info
         if (this.elements.fileInfo) {
-            this.elements.fileInfo.textContent = `已选择: ${file.name} (${this.formatFileSize(file.size)})`;
+            this.elements.fileInfo.textContent = `宸查€夋嫨: ${file.name} (${this.formatFileSize(file.size)})`;
             this.elements.fileInfo.style.display = 'block';
         }
     }
@@ -138,7 +138,7 @@ class FileUploadComponent {
         if (size === 0) {
             return {
                 valid: false,
-                error: '文件为空'
+                error: '鏂囦欢涓虹┖'
             };
         }
         
@@ -273,7 +273,7 @@ class FileUploadComponent {
      */
     async handleUpload() {
         if (!this.selectedFile) {
-            this.showError('请先选择文件');
+            this.showError('璇峰厛閫夋嫨鏂囦欢');
             return;
         }
         
@@ -281,7 +281,7 @@ class FileUploadComponent {
             // Disable upload button
             if (this.elements.uploadButton) {
                 this.elements.uploadButton.disabled = true;
-                this.elements.uploadButton.textContent = '上传中...';
+                this.elements.uploadButton.textContent = '涓婁紶涓?..';
             }
             
             // Show progress bar
@@ -308,7 +308,7 @@ class FileUploadComponent {
             this.showProgress(100);
             
             // Show success message
-            this.showSuccess('文件上传成功！');
+            this.showSuccess('鏂囦欢涓婁紶鎴愬姛锛?);
             
             // Trigger custom event for other components
             window.dispatchEvent(new CustomEvent('fileUploaded', {
@@ -347,7 +347,7 @@ class FileUploadComponent {
             };
             
             reader.onerror = () => {
-                reject(new Error('文件读取失败'));
+                reject(new Error('鏂囦欢璇诲彇澶辫触'));
             };
             
             reader.readAsText(file);
@@ -385,7 +385,7 @@ class FileUploadComponent {
         } catch (error) {
             // Re-throw with more context
             if (error.name === 'GitHubAPIError') {
-                throw new Error(`GitHub API 错误: ${error.apiMessage}`);
+                throw new Error(`GitHub API 閿欒: ${error.apiMessage}`);
             } else if (error.name === 'NetworkError') {
                 throw new Error(CONFIG.ERROR_MESSAGES.NETWORK_ERROR);
             } else {
@@ -431,7 +431,7 @@ class FileUploadComponent {
     resetUploadButton() {
         if (this.elements.uploadButton) {
             this.elements.uploadButton.disabled = false;
-            this.elements.uploadButton.textContent = '上传文件';
+            this.elements.uploadButton.textContent = '涓婁紶鏂囦欢';
         }
     }
     

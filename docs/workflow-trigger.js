@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WorkflowTriggerComponent - Handles GitHub Actions workflow triggering
  * Browser version (non-module)
  */
@@ -32,7 +32,7 @@ class WorkflowTriggerComponent {
      */
     async handleSubmit() {
         if (this.isWorkflowActive) {
-            this.displayMessage('工作流正在执行中，请等待完成', 'warning');
+            this.displayMessage('宸ヤ綔娴佹鍦ㄦ墽琛屼腑锛岃绛夊緟瀹屾垚', 'warning');
             return;
         }
         
@@ -55,7 +55,7 @@ class WorkflowTriggerComponent {
             const hasActive = await this.checkActiveWorkflow();
             
             if (hasActive) {
-                this.displayMessage('已有工作流正在执行，请等待完成', 'warning');
+                this.displayMessage('宸叉湁宸ヤ綔娴佹鍦ㄦ墽琛岋紝璇风瓑寰呭畬鎴?, 'warning');
                 return { success: false };
             }
             
@@ -76,7 +76,7 @@ class WorkflowTriggerComponent {
             }
             
             // Trigger the workflow
-            this.displayMessage('正在触发工作流...', 'info');
+            this.displayMessage('姝ｅ湪瑙﹀彂宸ヤ綔娴?..', 'info');
             
             const result = await this.githubAPIClient.triggerWorkflow(
                 CONFIG.WORKFLOW_FILE,
@@ -95,24 +95,24 @@ class WorkflowTriggerComponent {
                 
                 if (recentRun) {
                     this.currentRunId = recentRun.id;
-                    this.displayMessage(`工作流已触发 (Run ID: ${recentRun.id})`, 'success');
+                    this.displayMessage(`宸ヤ綔娴佸凡瑙﹀彂 (Run ID: ${recentRun.id})`, 'success');
                     
                     return {
                         success: true,
                         runId: recentRun.id
                     };
                 } else {
-                    this.displayMessage('工作流已触发，但无法获取 Run ID', 'warning');
+                    this.displayMessage('宸ヤ綔娴佸凡瑙﹀彂锛屼絾鏃犳硶鑾峰彇 Run ID', 'warning');
                     return { success: true };
                 }
             } else {
-                this.displayMessage('工作流触发失败', 'error');
+                this.displayMessage('宸ヤ綔娴佽Е鍙戝け璐?, 'error');
                 return { success: false };
             }
             
         } catch (error) {
             console.error('Workflow trigger error:', error);
-            this.displayMessage(`工作流触发失败: ${error.message}`, 'error');
+            this.displayMessage(`宸ヤ綔娴佽Е鍙戝け璐? ${error.message}`, 'error');
             return { success: false };
         }
     }
@@ -185,10 +185,10 @@ class WorkflowTriggerComponent {
         if (this.elements && this.elements.submitButton) {
             if (this.isWorkflowActive) {
                 this.elements.submitButton.disabled = true;
-                this.elements.submitButton.textContent = '工作流执行中...';
+                this.elements.submitButton.textContent = '宸ヤ綔娴佹墽琛屼腑...';
             } else {
                 this.elements.submitButton.disabled = false;
-                this.elements.submitButton.textContent = '生成 IKFast 求解器';
+                this.elements.submitButton.textContent = '鐢熸垚 IKFast 姹傝В鍣?;
             }
         }
     }

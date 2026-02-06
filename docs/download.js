@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DownloadComponent - Handles artifact download and file extraction
  * ES Module version for testing
  */
@@ -88,7 +88,7 @@ class DownloadComponent {
             // Show artifact expiration info
             if (this.elements.artifactInfo) {
                 const expiresAt = new Date(resultArtifact.expiresAt);
-                this.elements.artifactInfo.textContent = `Artifact 将于 ${expiresAt.toLocaleString()} 过期`;
+                this.elements.artifactInfo.textContent = `Artifact 灏嗕簬 ${expiresAt.toLocaleString()} 杩囨湡`;
                 this.elements.artifactInfo.style.display = 'block';
             }
         }
@@ -192,7 +192,7 @@ class DownloadComponent {
             // Show loading state
             if (this.elements.downloadSolverButton) {
                 this.elements.downloadSolverButton.disabled = true;
-                this.elements.downloadSolverButton.textContent = '下载�?..';
+                this.elements.downloadSolverButton.textContent = '涓嬭浇涓?..';
             }
             
             // Download and extract
@@ -202,16 +202,16 @@ class DownloadComponent {
             this.triggerDownload(blob, 'ikfast_solver.cpp');
             
             // Show success message
-            this.showSuccess('ikfast_solver.cpp 下载成功');
+            this.showSuccess('ikfast_solver.cpp 涓嬭浇鎴愬姛');
             
         } catch (error) {
             console.error('Solver download failed:', error);
-            this.showError(`下载失败: ${error.message}`);
+            this.showError(`涓嬭浇澶辫触: ${error.message}`);
         } finally {
             // Reset button state
             if (this.elements.downloadSolverButton) {
                 this.elements.downloadSolverButton.disabled = false;
-                this.elements.downloadSolverButton.textContent = '下载 ikfast_solver.cpp';
+                this.elements.downloadSolverButton.textContent = '涓嬭浇 ikfast_solver.cpp';
             }
         }
     }
@@ -228,7 +228,7 @@ class DownloadComponent {
             // Show loading state
             if (this.elements.downloadLogButton) {
                 this.elements.downloadLogButton.disabled = true;
-                this.elements.downloadLogButton.textContent = '下载�?..';
+                this.elements.downloadLogButton.textContent = '涓嬭浇涓?..';
             }
             
             // Download and extract
@@ -238,16 +238,16 @@ class DownloadComponent {
             this.triggerDownload(blob, 'build.log');
             
             // Show success message
-            this.showSuccess('build.log 下载成功');
+            this.showSuccess('build.log 涓嬭浇鎴愬姛');
             
         } catch (error) {
             console.error('Log download failed:', error);
-            this.showError(`下载失败: ${error.message}`);
+            this.showError(`涓嬭浇澶辫触: ${error.message}`);
         } finally {
             // Reset button state
             if (this.elements.downloadLogButton) {
                 this.elements.downloadLogButton.disabled = false;
-                this.elements.downloadLogButton.textContent = '下载 build.log';
+                this.elements.downloadLogButton.textContent = '涓嬭浇 build.log';
             }
         }
     }

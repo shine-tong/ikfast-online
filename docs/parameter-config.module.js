@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ParameterConfigComponent - Handles IKFast parameter configuration
  * ES Module version for testing
  */
@@ -137,7 +137,7 @@ export class ParameterConfigComponent {
         if (value === null || value === undefined) {
             return {
                 valid: false,
-                error: '请输入链接索引'
+                error: '璇疯緭鍏ラ摼鎺ョ储寮?
             };
         }
         
@@ -145,7 +145,7 @@ export class ParameterConfigComponent {
         if (!Number.isInteger(value)) {
             return {
                 valid: false,
-                error: '链接索引必须是整数'
+                error: '閾炬帴绱㈠紩蹇呴』鏄暣鏁?
             };
         }
         
@@ -153,7 +153,7 @@ export class ParameterConfigComponent {
         if (value < 0) {
             return {
                 valid: false,
-                error: '链接索引必须是非负整数'
+                error: '閾炬帴绱㈠紩蹇呴』鏄潪璐熸暣鏁?
             };
         }
         
@@ -171,14 +171,14 @@ export class ParameterConfigComponent {
         if (!ikType || typeof ikType !== 'string') {
             return {
                 valid: false,
-                error: '请选择 IK 类型'
+                error: '璇烽€夋嫨 IK 绫诲瀷'
             };
         }
         
         if (!validTypes.includes(ikType)) {
             return {
                 valid: false,
-                error: '无效的 IK 类型'
+                error: '鏃犳晥鐨?IK 绫诲瀷'
             };
         }
         
@@ -207,9 +207,9 @@ export class ParameterConfigComponent {
             valid = false;
         }
         
-        // Validate that base_link ≠ ee_link
+        // Validate that base_link 鈮?ee_link
         if (valid && params.baseLink === params.eeLink) {
-            errors.general = '基座链接和末端执行器链接不能相同';
+            errors.general = '鍩哄骇閾炬帴鍜屾湯绔墽琛屽櫒閾炬帴涓嶈兘鐩稿悓';
             valid = false;
         }
         

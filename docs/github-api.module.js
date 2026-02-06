@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GitHubAPIClient - Client for interacting with GitHub REST API
  * Handles file uploads, workflow triggers, status monitoring, and artifact downloads
  * ES Module version for testing
@@ -426,7 +426,7 @@ export class GitHubAPIClient {
             totalMinutesUsed: usage.totalMinutesUsed,
             includedMinutes: usage.includedMinutes,
             message: shouldWarn 
-                ? `警告: GitHub Actions 配额已使用 ${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} 分钟)`
+                ? `璀﹀憡: GitHub Actions 閰嶉宸蹭娇鐢?${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} 鍒嗛挓)`
                 : ''
         };
     }

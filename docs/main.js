@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Main entry point for IKFast Online Generator
  * This file initializes the application and sets up event listeners
  * Integrates all components and manages application state
@@ -262,7 +262,7 @@ async function handleFileUploaded(event) {
     AppState.file.sha = event.detail.sha;
     
     // Show success message
-    showSuccess('文件上传成功！正在获取链接信息...');
+    showSuccess('鏂囦欢涓婁紶鎴愬姛锛佹鍦ㄨ幏鍙栭摼鎺ヤ俊鎭?..');
     
     // Link info component will automatically fetch link info
     // We just need to update UI state
@@ -282,14 +282,14 @@ function handleLinkSelected(event) {
     if (isRoot && !parameterConfigComponent.parameters.baseLink) {
         // Suggest as base link if it's a root and base link is not set
         parameterConfigComponent.setParameters({ baseLink: index });
-        showInfo(`已将 ${link.name} (索引 ${index}) 设置为 Base Link`);
+        showInfo(`宸插皢 ${link.name} (绱㈠紩 ${index}) 璁剧疆涓?Base Link`);
     } else if (isLeaf && !parameterConfigComponent.parameters.eeLink) {
         // Suggest as ee link if it's a leaf and ee link is not set
         parameterConfigComponent.setParameters({ eeLink: index });
-        showInfo(`已将 ${link.name} (索引 ${index}) 设置为 End Effector Link`);
+        showInfo(`宸插皢 ${link.name} (绱㈠紩 ${index}) 璁剧疆涓?End Effector Link`);
     } else {
         // Let user decide - show both options
-        showInfo(`已选择链接: ${link.name} (索引 ${index})`);
+        showInfo(`宸查€夋嫨閾炬帴: ${link.name} (绱㈠紩 ${index})`);
     }
     
     // Update application state
@@ -336,7 +336,7 @@ async function handleWorkflowSubmit() {
         
         if (!validation.valid) {
             parameterConfigComponent.displayValidationErrors(validation.errors);
-            showError('参数验证失败，请检查输入');
+            showError('鍙傛暟楠岃瘉澶辫触锛岃妫€鏌ヨ緭鍏?);
             return;
         }
         
@@ -347,7 +347,7 @@ async function handleWorkflowSubmit() {
         elements.submitButton.disabled = true;
         
         // Trigger workflow
-        showInfo('正在触发工作流...');
+        showInfo('姝ｅ湪瑙﹀彂宸ヤ綔娴?..');
         
         const result = await workflowTriggerComponent.triggerWorkflow({
             mode: 'generate',
@@ -368,9 +368,9 @@ async function handleWorkflowSubmit() {
             // Start fetching logs periodically
             startLogPolling(result.runId);
             
-            showSuccess('工作流已成功触发！');
+            showSuccess('宸ヤ綔娴佸凡鎴愬姛瑙﹀彂锛?);
         } else {
-            showError('工作流触发失败');
+            showError('宸ヤ綔娴佽Е鍙戝け璐?);
             elements.submitButton.disabled = false;
         }
         
@@ -401,7 +401,7 @@ function handleStatusChange(status, run) {
     
     // Show status message
     const statusText = CONFIG.STATUS_MESSAGES[status.toUpperCase()] || status;
-    showInfo(`工作流状态: ${statusText}`);
+    showInfo(`宸ヤ綔娴佺姸鎬? ${statusText}`);
 }
 
 /**
@@ -431,9 +431,9 @@ async function handleWorkflowComplete(status, run) {
     // Enable downloads if successful
     if (status === 'completed') {
         downloadComponent.setWorkflowStatus('completed', run.id);
-        showSuccess('工作流执行成功！您现在可以下载结果文件。');
+        showSuccess('宸ヤ綔娴佹墽琛屾垚鍔燂紒鎮ㄧ幇鍦ㄥ彲浠ヤ笅杞界粨鏋滄枃浠躲€?);
     } else {
-        showError(`工作流执行失败: ${run.conclusion}`);
+        showError(`宸ヤ綔娴佹墽琛屽け璐? ${run.conclusion}`);
     }
     
     // Re-enable submit button for new submissions

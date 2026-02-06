@@ -1,4 +1,4 @@
-/**
+﻿/**
  * QuotaWarningComponent - Displays GitHub Actions quota warnings
  * ES Module version for testing
  */
@@ -77,7 +77,7 @@ export class QuotaWarningComponent {
         if (this.elements.warningDetails) {
             const percentText = Math.round(quotaInfo.percentUsed * 100);
             this.elements.warningDetails.textContent = 
-                `已使用: ${quotaInfo.totalMinutesUsed} / ${quotaInfo.includedMinutes} 分钟 (${percentText}%)`;
+                `宸蹭娇鐢? ${quotaInfo.totalMinutesUsed} / ${quotaInfo.includedMinutes} 鍒嗛挓 (${percentText}%)`;
         }
     }
     
