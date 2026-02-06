@@ -280,9 +280,13 @@ function handleLinkSelected(event) {
     
     // Auto-fill parameter based on link type
     if (isRoot && !parameterConfigComponent.parameters.baseLink) {
-        // Suggest as base link if it'Message's a leaf and ee link is not set
+        // Suggest as base link if it's a root and base link is not set
+        parameterConfigComponent.setParameters({ baseLink: index });
+        showInfo(`Set as Base Link`);
+    } else if (isLeaf && !parameterConfigComponent.parameters.eeLink) {
+        // Suggest as ee link if it's a leaf and ee link is not set
         parameterConfigComponent.setParameters({ eeLink: index });
-        showInfo(`Set as ?End Effector Link`);
+        showInfo(`Set as End Effector Link`);
     } else {
         // Let user decide - show both options
         showInfo(`宸查€夋嫨閾炬帴: ${link.name} (index ${index})`);
@@ -383,8 +387,28 @@ async function handleWorkflowSubmit() {
  * @param {string} status - New status
  * @param {Object} run - Workflow run details
  */
-function handleStatusChange(status, run) {
-    console.log('Status changed:'Message'Workflow completed:', status, run);
+async function handleStatusChange(status, run) {
+    console.log('Status changed:', status, run);
+    
+    // Update application state
+    AppState.workflow.status = status;
+    AppState.workflow.conclusion = run.conclusion;
+    
+    // Update UI
+    updateUIState();
+    
+    // Show status message
+    const statusText = CONFIG.STATUS_MESSAGES[status.toUpperCase()] || status;
+    showInfo(`Workflow status: ${statusText}`);
+}
+
+/**
+ * Handle workflow completion
+ * @param {string} status - Final status
+ * @param {Object} run - Workflow run details
+ */
+async function handleWorkflowComplete(status, run) {
+    console.log('Workflow completed:', status, run);
     
     // Update application state
     AppState.workflow.status = status;
@@ -405,7 +429,26 @@ function handleStatusChange(status, run) {
     // Enable downloads if successful
     if (status === 'completed') {
         downloadComponent.setWorkflowStatus('completed', run.id);
-        showSuccess('Operation successful');
+        showSuccess('Workflow execution successful! You can now download the result files.');
+    } else {
+        showError(`Workflow execution failed: ${run.conclusion}`);
+    }
+    
+    // Re-enable submit button for new submissions
+    elements.submitButton.disabled = false;
+    
+    // Update workflow trigger component state
+    workflowTriggerComponent.setWorkflowActive(false, null);
+    
+    // Update UI
+    updateUIState();
+}
+
+/**
+ * Handle workflow timeout
+ */
+function handleWorkflowTimeout() {
+    console.log('Workflow timeout');
     
     // Update application state
     AppState.workflow.status = 'failed';
