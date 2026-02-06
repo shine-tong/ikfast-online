@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   ikfast:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 for better Docker compatibility
     timeout-minutes: 30
     
     steps:
@@ -84,25 +84,26 @@ jobs:
           mkdir -p outputs
           
           # Run info mode to extract link information
-          sudo docker run --rm \
+          docker run --rm \
             -v ${GITHUB_WORKSPACE}:/ws \
             -w /ws \
-            fishros2/openrave bash -c "
+            fishros2/openrave \
+            /bin/bash -c '
               set -e
               # Source ROS environment
               source /opt/ros/noetic/setup.bash
               
-              echo '=== STEP 1: URDF to Collada ==='
+              echo "=== STEP 1: URDF to Collada ==="
               rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
               
-              echo '=== STEP 2: Verify Collada File ==='
+              echo "=== STEP 2: Verify Collada File ==="
               ls -lh robot.dae
               
-              echo '=== STEP 3: Extract Link Information ==='
+              echo "=== STEP 3: Extract Link Information ==="
               openrave-robot.py robot.dae --info links | tee /ws/outputs/links_raw.txt
               
-              echo '=== INFO MODE COMPLETE ==='
-            " 2>&1 | tee outputs/info.log
+              echo "=== INFO MODE COMPLETE ==="
+            ' 2>&1 | tee outputs/info.log
           
           # Verify outputs were created
           echo "Checking outputs directory:"
@@ -110,8 +111,12 @@ jobs:
           
           if [ ! -f outputs/links_raw.txt ]; then
             echo "ERROR: links_raw.txt was not created"
+            cat outputs/info.log
             exit 1
           fi
+          
+          echo "links_raw.txt content:"
+          cat outputs/links_raw.txt
       
       - name: Parse link info to JSON
         if: inputs.mode == 'info'
@@ -205,42 +210,42 @@ jobs:
           mkdir -p outputs
           
           # Run full generation pipeline
-          sudo docker run --rm \
+          docker run --rm \
             -v ${GITHUB_WORKSPACE}:/ws \
             -w /ws \
-            fishros2/openrave bash -c "
+            fishros2/openrave \
+            /bin/bash -c '
               set -e
               # Source ROS environment
               source /opt/ros/noetic/setup.bash
-              {
-                echo '=== STEP 1: URDF to Collada ==='
-                rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
-                
-                echo '=== STEP 2: Verify Collada File ==='
-                ls -lh robot.dae
-                
-                echo '=== STEP 3: Generate IKFast Solver ==='
-                python \`openrave-config --python-dir\`/openravepy/_openravepy_/ikfast.py \
-                  --robot=robot.dae \
-                  --iktype=${{ inputs.iktype }} \
-                  --baselink=${{ inputs.base_link }} \
-                  --eelink=${{ inputs.ee_link }} \
-                  --savefile=outputs/ikfast_solver.cpp
-                
-                echo '=== STEP 4: Verify Output ==='
-                if [ -f outputs/ikfast_solver.cpp ]; then
-                  ls -lh outputs/ikfast_solver.cpp
-                  wc -l outputs/ikfast_solver.cpp
-                  echo '=== STEP 5: Compute Checksum ==='
-                  sha256sum outputs/ikfast_solver.cpp
-                else
-                  echo 'ERROR: ikfast_solver.cpp was not generated'
-                  exit 1
-                fi
-                
-                echo '=== GENERATION COMPLETE ==='
-              } 2>&1 | tee outputs/build.log
-            "
+              
+              echo "=== STEP 1: URDF to Collada ==="
+              rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
+              
+              echo "=== STEP 2: Verify Collada File ==="
+              ls -lh robot.dae
+              
+              echo "=== STEP 3: Generate IKFast Solver ==="
+              python `openrave-config --python-dir`/openravepy/_openravepy_/ikfast.py \
+                --robot=robot.dae \
+                --iktype=${{ inputs.iktype }} \
+                --baselink=${{ inputs.base_link }} \
+                --eelink=${{ inputs.ee_link }} \
+                --savefile=/ws/outputs/ikfast_solver.cpp
+              
+              echo "=== STEP 4: Verify Output ==="
+              if [ -f /ws/outputs/ikfast_solver.cpp ]; then
+                ls -lh /ws/outputs/ikfast_solver.cpp
+                wc -l /ws/outputs/ikfast_solver.cpp
+                echo "=== STEP 5: Compute Checksum ==="
+                sha256sum /ws/outputs/ikfast_solver.cpp
+              else
+                echo "ERROR: ikfast_solver.cpp was not generated"
+                exit 1
+              fi
+              
+              echo "=== GENERATION COMPLETE ==="
+            ' 2>&1 | tee outputs/build.log
       
       - name: Verify output file integrity
         if: inputs.mode == 'generate'
