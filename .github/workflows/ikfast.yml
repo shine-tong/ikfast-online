@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   ikfast:
-    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 for better Docker compatibility
+    runs-on: ubuntu-20.04  # Use Ubuntu 20.04 to match the Docker image
     timeout-minutes: 30
     
     steps:
@@ -54,6 +54,25 @@ jobs:
           fi
           echo "URDF file found:"
           ls -lh jobs/current/robot.urdf
+      
+      - name: Check system and Docker architecture
+        run: |
+          echo "=== System Information ==="
+          uname -a
+          echo ""
+          echo "=== CPU Architecture ==="
+          uname -m
+          echo ""
+          echo "=== Docker Version ==="
+          docker --version
+          echo ""
+          echo "=== Docker Image Information ==="
+          docker pull fishros2/openrave:latest
+          docker image inspect fishros2/openrave:latest | grep -A 5 "Architecture"
+          echo ""
+          echo "=== Test Docker Execution ==="
+          docker run --rm fishros2/openrave uname -a
+          docker run --rm fishros2/openrave bash --version
       
       - name: Validate inputs
         run: |
@@ -88,7 +107,7 @@ jobs:
             -v ${GITHUB_WORKSPACE}:/ws \
             -w /ws \
             fishros2/openrave \
-            /bin/bash -c '
+            bash -c '
               set -e
               # Source ROS environment
               source /opt/ros/noetic/setup.bash
@@ -111,11 +130,12 @@ jobs:
           
           if [ ! -f outputs/links_raw.txt ]; then
             echo "ERROR: links_raw.txt was not created"
+            echo "=== Docker info.log content ==="
             cat outputs/info.log
             exit 1
           fi
           
-          echo "links_raw.txt content:"
+          echo "=== links_raw.txt content ==="
           cat outputs/links_raw.txt
       
       - name: Parse link info to JSON
@@ -214,7 +234,7 @@ jobs:
             -v ${GITHUB_WORKSPACE}:/ws \
             -w /ws \
             fishros2/openrave \
-            /bin/bash -c '
+            bash -c '
               set -e
               # Source ROS environment
               source /opt/ros/noetic/setup.bash
