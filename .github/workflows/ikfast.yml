@@ -26,11 +26,11 @@ on:
 
 concurrency:
   group: ikfast-generation
-  cancel-in-progress: false
+  cancel-in-progress: true  # Cancel old workflows when new one starts
 
 jobs:
   ikfast:
-    runs-on: ubuntu-20.04  # Use Ubuntu 20.04 to match the Docker image
+    runs-on: ubuntu-latest  # Use latest Ubuntu (24.04)
     timeout-minutes: 30
     
     steps:
@@ -104,6 +104,7 @@ jobs:
           
           # Run info mode to extract link information
           docker run --rm \
+            --platform linux/amd64 \
             -v ${GITHUB_WORKSPACE}:/ws \
             -w /ws \
             fishros2/openrave \
@@ -231,6 +232,7 @@ jobs:
           
           # Run full generation pipeline
           docker run --rm \
+            --platform linux/amd64 \
             -v ${GITHUB_WORKSPACE}:/ws \
             -w /ws \
             fishros2/openrave \
