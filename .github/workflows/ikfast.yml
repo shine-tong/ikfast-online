@@ -81,19 +81,31 @@ jobs:
         run: |
           mkdir -p outputs
           
+          # Create script file
+          cat > run_info.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          source /opt/ros/noetic/setup.bash
+          
+          echo "=== STEP 1: URDF to Collada ==="
+          rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
+          
+          echo "=== STEP 2: Verify Collada File ==="
+          ls -lh robot.dae
+          
+          echo "=== STEP 3: Extract Link Information ==="
+          openrave-robot.py robot.dae --info links | tee outputs/links_raw.txt
+          
+          echo "=== INFO MODE COMPLETE ==="
+          EOF
+          
+          chmod +x run_info.sh
+          
           docker run --rm --platform linux/amd64 \
             -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
             -w ${GITHUB_WORKSPACE} \
             fishros2/openrave \
-            /bin/bash -c "set -e && \
-              source /opt/ros/noetic/setup.bash && \
-              echo '=== STEP 1: URDF to Collada ===' && \
-              rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae && \
-              echo '=== STEP 2: Verify Collada File ===' && \
-              ls -lh robot.dae && \
-              echo '=== STEP 3: Extract Link Information ===' && \
-              openrave-robot.py robot.dae --info links | tee outputs/links_raw.txt && \
-              echo '=== INFO MODE COMPLETE ==='" 2>&1 | tee outputs/info.log
+            ./run_info.sh 2>&1 | tee outputs/info.log
           
           echo "Checking outputs directory:"
           ls -la outputs/
@@ -184,33 +196,46 @@ jobs:
         run: |
           mkdir -p outputs
           
+          # Create script file
+          cat > run_generate.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          source /opt/ros/noetic/setup.bash
+          
+          echo "=== STEP 1: URDF to Collada ==="
+          rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae
+          
+          echo "=== STEP 2: Verify Collada File ==="
+          ls -lh robot.dae
+          
+          echo "=== STEP 3: Generate IKFast Solver ==="
+          python `openrave-config --python-dir`/openravepy/_openravepy_/ikfast.py \
+            --robot=robot.dae \
+            --iktype=${{ inputs.iktype }} \
+            --baselink=${{ inputs.base_link }} \
+            --eelink=${{ inputs.ee_link }} \
+            --savefile=outputs/ikfast_solver.cpp
+          
+          echo "=== STEP 4: Verify Output ==="
+          if [ -f outputs/ikfast_solver.cpp ]; then
+            ls -lh outputs/ikfast_solver.cpp
+            wc -l outputs/ikfast_solver.cpp
+            sha256sum outputs/ikfast_solver.cpp
+          else
+            echo "ERROR: ikfast_solver.cpp was not generated"
+            exit 1
+          fi
+          
+          echo "=== GENERATION COMPLETE ==="
+          EOF
+          
+          chmod +x run_generate.sh
+          
           docker run --rm --platform linux/amd64 \
             -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
             -w ${GITHUB_WORKSPACE} \
             fishros2/openrave \
-            /bin/bash -c "set -e && \
-              source /opt/ros/noetic/setup.bash && \
-              echo '=== STEP 1: URDF to Collada ===' && \
-              rosrun collada_urdf urdf_to_collada jobs/current/robot.urdf robot.dae && \
-              echo '=== STEP 2: Verify Collada File ===' && \
-              ls -lh robot.dae && \
-              echo '=== STEP 3: Generate IKFast Solver ===' && \
-              python \$(openrave-config --python-dir)/openravepy/_openravepy_/ikfast.py \
-                --robot=robot.dae \
-                --iktype=${{ inputs.iktype }} \
-                --baselink=${{ inputs.base_link }} \
-                --eelink=${{ inputs.ee_link }} \
-                --savefile=outputs/ikfast_solver.cpp && \
-              echo '=== STEP 4: Verify Output ===' && \
-              if [ -f outputs/ikfast_solver.cpp ]; then \
-                ls -lh outputs/ikfast_solver.cpp && \
-                wc -l outputs/ikfast_solver.cpp && \
-                sha256sum outputs/ikfast_solver.cpp; \
-              else \
-                echo 'ERROR: ikfast_solver.cpp was not generated' && \
-                exit 1; \
-              fi && \
-              echo '=== GENERATION COMPLETE ==='" 2>&1 | tee outputs/build.log
+            ./run_generate.sh 2>&1 | tee outputs/build.log
       
       - name: Verify output file integrity
         if: inputs.mode == 'generate'
