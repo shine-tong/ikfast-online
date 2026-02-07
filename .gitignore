@@ -1,0 +1,120 @@
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+package-lock.json
+
+# ============================================
+# Logs
+# ============================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# ============================================
+# OS files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ============================================
+# IDE and Editor files
+# ============================================
+.vscode/
+.idea/
+.kiro/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# Environment variables
+# ============================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# ============================================
+# Test coverage
+# ============================================
+coverage/
+.nyc_output/
+*.lcov
+
+# ============================================
+# Temporary files
+# ============================================
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+
+# ============================================
+# Backup files
+# ============================================
+*.bak
+*.backup
+*.old
+*~
+
+# ============================================
+# PowerShell scripts and encoding fixes
+# ============================================
+fix-encoding.ps1
+fix-all-encoding.ps1
+*.ps1.log
+
+# ============================================
+# Temporary documentation and reports
+# ============================================
+ENCODING-FIXES-NEEDED.md
+PRODUCTION-READINESS-REPORT.md
+
+# ============================================
+# Debug and test files
+# ============================================
+docs/debug-info.html
+docs/simple-test.html
+docs/test-debug.html
+test/CHECKPOINT-*.md
+test/FINAL-TEST-RESULTS.md
+
+# ============================================
+# Git files
+# ============================================
+*.orig
+*.rej
+.git/AUTO_MERGE
+
+# ============================================
+# Kiro workspace files (optional)
+# ============================================
+# Uncomment if you don't want to share Kiro workspace settings
+# .kiro/
+
+# ============================================
+# Other
+# ============================================
+.vercel
+.netlify
+IKFast求解器在线生成平台方案.md
+Moveit配置IKfast运动学插件.md
