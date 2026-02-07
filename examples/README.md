@@ -4,87 +4,54 @@
 
 ## 📁 文件列表
 
-### 1. simple_arm.urdf
+### sa2000h_urdf_0521.urdf
 
-**描述**: 简单的 3 自由度机械臂
-
-**规格**:
-- **自由度**: 3 DOF
-- **关节类型**: 3 个旋转关节 (Revolute)
-- **链接数量**: 5 个链接（包括基座和末端执行器）
-- **总长度**: 约 0.75 米
-- **适用场景**: 学习和测试基础 IKFast 功能
-
-**链接结构**:
-```
-base_link (索引 0)
-  └─ joint1 (revolute, Z轴)
-     └─ link1 (索引 1)
-        └─ joint2 (revolute, Y轴)
-           └─ link2 (索引 2)
-              └─ joint3 (revolute, Y轴)
-                 └─ link3 (索引 3)
-                    └─ ee_joint (fixed)
-                       └─ ee_link (索引 4)
-```
-
-**推荐配置**:
-- **Base Link Index**: 0 (base_link)
-- **End Effector Link Index**: 4 (ee_link)
-- **IK Type**: `translation3d` 或 `transform6d`
-
-**关节限制**:
-- joint1: -180° 到 +180° (Z轴旋转)
-- joint2: -90° 到 +90° (Y轴旋转)
-- joint3: -90° 到 +90° (Y轴旋转)
-
----
-
-### 2. 6dof_arm.urdf
-
-**描述**: 6 自由度工业机械臂（类似 UR5/UR10）
+**描述**: 6 自由度工业机械臂
 
 **规格**:
 - **自由度**: 6 DOF
 - **关节类型**: 6 个旋转关节 (Revolute)
 - **链接数量**: 8 个链接（包括基座和末端执行器）
-- **总长度**: 约 1.0 米
 - **适用场景**: 完整的 6D 位姿求解器生成
 
 **链接结构**:
 ```
 base_link (索引 0)
-  └─ shoulder_pan_joint (revolute, Z轴)
-     └─ shoulder_link (索引 1)
-        └─ shoulder_lift_joint (revolute, Y轴)
-           └─ upper_arm_link (索引 2)
-              └─ elbow_joint (revolute, Y轴)
-                 └─ forearm_link (索引 3)
-                    └─ wrist_1_joint (revolute, Y轴)
-                       └─ wrist_1_link (索引 4)
-                          └─ wrist_2_joint (revolute, Z轴)
-                             └─ wrist_2_link (索引 5)
-                                └─ wrist_3_joint (revolute, Z轴)
-                                   └─ wrist_3_link (索引 6)
-                                      └─ ee_joint (fixed)
-                                         └─ ee_link (索引 7)
+  └─ joint1 (revolute, -Z轴)
+     └─ link1 (索引 1)
+        └─ joint2 (revolute, -Z轴)
+           └─ link2 (索引 2)
+              └─ joint3 (revolute, -Z轴)
+                 └─ link3 (索引 3)
+                    └─ joint4 (revolute, -Z轴)
+                       └─ link4 (索引 4)
+                          └─ joint5 (revolute, Z轴)
+                             └─ link5 (索引 5)
+                                └─ joint6 (revolute, -Z轴)
+                                   └─ link6 (索引 6)
+                                      └─ joint_flp (fixed)
+                                         └─ link_flp (索引 7)
+                                            └─ joint_tool (fixed)
+                                               └─ link_tool (索引 8)
 ```
 
 **推荐配置**:
 - **Base Link Index**: 0 (base_link)
-- **End Effector Link Index**: 7 (ee_link)
+- **End Effector Link Index**: 8 (link_tool) 或 7 (link_flp)
 - **IK Type**: `transform6d` (推荐)
 
 **关节限制**:
-- shoulder_pan_joint: -180° 到 +180° (Z轴)
-- shoulder_lift_joint: -90° 到 +90° (Y轴)
-- elbow_joint: -135° 到 +135° (Y轴)
-- wrist_1_joint: -180° 到 +180° (Y轴)
-- wrist_2_joint: -180° 到 +180° (Z轴)
-- wrist_3_joint: -180° 到 +180° (Z轴)
+- joint1: -165° 到 +165° (-2.8798 到 +2.8798 rad, -Z轴)
+- joint2: -80° 到 +163° (-1.3963 到 +2.8449 rad, -Z轴)
+- joint3: -80° 到 +80° (-1.3963 到 +1.3963 rad, -Z轴)
+- joint4: -92° 到 +92° (-1.6 到 +1.6 rad, -Z轴)
+- joint5: -130° 到 +130° (-2.2689 到 +2.2689 rad, Z轴)
+- joint6: -360° 到 +360° (-6.2832 到 +6.2832 rad, -Z轴)
 
 **特点**:
-- 球形手腕配置（最后 3 个关节轴交于一点）
+- SA2000H 工业机械臂模型
+- 6 个旋转关节，全部围绕 Z 轴旋转（joint5 除外为正向）
+- 包含法兰盘 (link_flp) 和工具坐标系 (link_tool)
 - 适合生成高效的解析解
 - 典型的工业机器人结构
 
@@ -104,17 +71,14 @@ base_link (索引 0)
 如果您已经部署了平台，可以直接从仓库下载：
 
 ```bash
-# 下载 simple_arm.urdf
-curl -O https://raw.githubusercontent.com/your-username/ikfast-online-generator/main/examples/simple_arm.urdf
-
-# 下载 6dof_arm.urdf
-curl -O https://raw.githubusercontent.com/your-username/ikfast-online-generator/main/examples/6dof_arm.urdf
+# 下载 sa2000h_urdf_0521.urdf
+curl -O https://raw.githubusercontent.com/your-username/ikfast-online-generator/master/examples/sa2000h_urdf_0521.urdf
 ```
 
 ### 方法 3: 克隆仓库
 
 ```bash
-git clone https://github.com/your-username/ikfast-online-generator.git
+git clone https://github.com/your-username/your-reponame.git
 cd ikfast-online-generator/examples
 ```
 
@@ -126,8 +90,8 @@ cd ikfast-online-generator/examples
 
 | IK Type | 描述 | 适用场景 | 示例机器人 |
 |---------|------|----------|------------|
-| `transform6d` | 完整 6D 位姿 (位置+姿态) | 6 DOF 机械臂 | 6dof_arm |
-| `translation3d` | 仅 3D 位置 | 3 DOF 机械臂，无姿态要求 | simple_arm |
+| `transform6d` | 完整 6D 位姿 (位置+姿态) | 6 DOF 机械臂 | sa2000h_urdf_0521.urdf |
+| `translation3d` | 仅 3D 位置 | 3 DOF 机械臂，无姿态要求 | - |
 | `direction3d` | 方向向量 | 需要指向特定方向 | 相机云台 |
 | `ray4d` | 射线 (原点+方向) | 激光指向、视线跟踪 | - |
 | `lookat3d` | 注视点 | 相机、传感器对准 | - |

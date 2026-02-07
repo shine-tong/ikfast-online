@@ -20,7 +20,7 @@
 ```javascript
 export const CONFIG = {
   REPO_OWNER: 'your-username',           // 改为您的 GitHub 用户名
-  REPO_NAME: 'ikfast-online-generator',  // 改为您的仓库名称
+  REPO_NAME: 'your-reponame',  // 改为您的仓库名称
   WORKFLOW_FILE: 'ikfast.yml',           // 保持不变
   POLLING_INTERVAL: 5000,                // 保持不变
   MAX_FILE_SIZE: 10 * 1024 * 1024,      // 保持不变
@@ -38,8 +38,6 @@ git push origin main
 
 ### 步骤 2: 启用 GitHub Pages
 
-#### 方法 A: 通过 Web 界面配置（推荐）
-
 1. 访问您的仓库页面
 2. 点击 **Settings** 标签
 3. 在左侧菜单中找到 **Pages**
@@ -52,45 +50,6 @@ git push origin main
 
 **⚠️ 重要提示**: GitHub Pages 只支持从 `/ (root)` 或 `/docs` 部署。本项目使用 `/docs` 文件夹。
 
-#### 方法 B: 使用 GitHub Actions 部署（高级）
-
-如果您希望使用 GitHub Actions 自动部署，可以创建部署工作流：
-
-1. 创建 `.github/workflows/deploy.yml`：
-
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: './web'
-      
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
-```
-
 2. 在 **Settings** → **Pages** 中：
    - **Source**: 选择 `GitHub Actions`
 
@@ -98,7 +57,7 @@ jobs:
 
 1. 部署完成后，访问您的 GitHub Pages 地址：
    ```
-   https://shine-tong.github.io/ikfast-online/
+   https://your-username.github.io/your-reponame/
    ```
 
 2. 检查页面是否正常加载：
@@ -141,7 +100,7 @@ jobs:
 5. 清除浏览器缓存后重新访问
 6. 检查 **Actions** 标签确认部署工作流已完成
 
-**快速检查**: 访问 `https://your-username.github.io/your-repo-name/index.html`，如果能访问说明配置正确。
+**快速检查**: 访问 `https://your-username.github.io/your-reponame/index.html`，如果能访问说明配置正确。
 
 ### 问题 2: 样式或脚本未加载
 
@@ -197,7 +156,7 @@ jobs:
 
 当您更新代码后，GitHub Pages 会自动重新部署：
 
-1. 提交并推送更改到 `main` 分支
+1. 提交并推送更改到 `master` 分支
 2. GitHub 自动触发部署
 3. 等待几分钟
 4. 刷新页面查看更新

@@ -1,67 +1,67 @@
-# Test Suite
+# 测试套件
 
-This directory contains unit tests for the IKFast Online Generator.
+本目录包含 IKFast Online Generator 的单元测试。
 
-## Running Tests
+## 运行测试
 
 ```bash
-# Run all tests
+# 运行所有测试
 npm test
 
-# Run tests in watch mode
+# 以监视模式运行测试
 npm run test:watch
 
-# Run tests with coverage
+# 运行测试并生成覆盖率报告
 npm run test:coverage
 
-# Run specific test file
+# 运行特定测试文件
 npm test -- test/auth.test.js
 ```
 
-## Test Files
+## 测试文件
 
 ### auth.test.js
-Tests for the `AuthenticationManager` class:
-- Token storage and retrieval (6 tests)
-- Token validation (8 tests)
-- Authentication state management (2 tests)
+`AuthenticationManager` 类的测试：
+- Token 存储和检索（6 个测试）
+- Token 验证（8 个测试）
+- 身份验证状态管理（2 个测试）
 
-**Total: 16 tests**
+**总计：16 个测试**
 
 ### github-api.test.js
-Tests for the `GitHubAPIClient` class:
-- API request formatting (3 tests)
-- Error handling for various HTTP status codes (6 tests)
-- File upload functionality (3 tests)
-- Workflow triggering (2 tests)
-- Workflow run details (1 test)
-- Artifact listing (1 test)
-- Artifact downloading (1 test)
-- Active workflow detection (2 tests)
+`GitHubAPIClient` 类的测试：
+- API 请求格式化（3 个测试）
+- 各种 HTTP 状态码的错误处理（6 个测试）
+- 文件上传功能（3 个测试）
+- 工作流触发（2 个测试）
+- 工作流运行详情（1 个测试）
+- 制品列表（1 个测试）
+- 制品下载（1 个测试）
+- 活动工作流检测（2 个测试）
 
-**Total: 19 tests**
+**总计：19 个测试**
 
 ### workflow.test.js
-Tests for the GitHub Actions workflow file:
-- YAML syntax validation (6 tests)
-- Workflow configuration (3 tests)
-- Workflow steps (6 tests)
-- Docker configuration (3 tests)
-- Info mode workflow (4 tests)
-- Generate mode workflow (6 tests)
-- Artifact upload (4 tests)
-- Input validation (4 tests)
-- Error handling (3 tests)
-- Log output (2 tests)
+GitHub Actions 工作流文件的测试：
+- YAML 语法验证（6 个测试）
+- 工作流配置（3 个测试）
+- 工作流步骤（6 个测试）
+- Docker 配置（3 个测试）
+- Info 模式工作流（4 个测试）
+- Generate 模式工作流（6 个测试）
+- 制品上传（4 个测试）
+- 输入验证（4 个测试）
+- 错误处理（3 个测试）
+- 日志输出（2 个测试）
 
-**Total: 41 tests**
+**总计：41 个测试**
 
-## Test Framework
+## 测试框架
 
-- **Vitest**: Fast unit test framework
-- **happy-dom**: Lightweight DOM implementation for testing
-- **vi**: Mocking and spying utilities
+- **Vitest**：快速的单元测试框架
+- **happy-dom**：用于测试的轻量级 DOM 实现
+- **vi**：模拟和监视工具
 
-## Coverage
+## 覆盖率
 
-Run `npm run test:coverage` to generate a coverage report.
+运行 `npm run test:coverage` 生成覆盖率报告。

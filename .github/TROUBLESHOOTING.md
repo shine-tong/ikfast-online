@@ -15,7 +15,7 @@
 
 ```
 Source: Deploy from a branch
-Branch: main
+Branch: master
 Folder: /docs  ← 必须是 /docs（GitHub Pages 只支持 / 或 /docs）
 ```
 
@@ -28,13 +28,13 @@ Folder: /docs  ← 必须是 /docs（GitHub Pages 只支持 / 或 /docs）
 访问以下 URL（替换为您的实际信息）：
 
 ```
-https://your-username.github.io/your-repo-name/
+https://your-username.github.io/your-reponame/
 ```
 
 如果仍然 404，尝试直接访问：
 
 ```
-https://your-username.github.io/your-repo-name/index.html
+https://your-username.github.io/your-reponame/index.html
 ```
 
 ### 3. 清除缓存
@@ -74,7 +74,7 @@ GitHub Pages 只支持从以下位置部署：
 
 - [ ] Settings → Pages 已打开
 - [ ] Source 设置为 "Deploy from a branch"
-- [ ] Branch 设置为 "main"
+- [ ] Branch 设置为 "master"
 - [ ] **Folder 设置为 "/docs"**（最重要！）
 - [ ] 点击了 Save 按钮
 - [ ] 等待了 5 分钟
@@ -154,7 +154,7 @@ jobs:
 在浏览器控制台（F12）运行：
 
 ```javascript
-fetch('https://your-username.github.io/your-repo-name/index.html')
+fetch('https://your-username.github.io/your-reponame/index.html')
   .then(r => console.log('Status:', r.status))
   .catch(e => console.error('Error:', e));
 ```
