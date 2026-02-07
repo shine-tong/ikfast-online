@@ -136,49 +136,55 @@ jobs:
               sys.exit(1)
           
           print("Raw content length:", len(content))
+          print("Raw content:")
+          print(content)
+          print("=" * 50)
           
           links = []
           in_link_section = False
-          header_found = False
           
           for line in content.split('\n'):
-              line = line.strip()
+              line_stripped = line.strip()
               
-              if re.match(r'^name\s+index\s+parent', line, re.IGNORECASE):
+              # Skip header lines
+              if re.match(r'^name\s+index\s+parent', line_stripped, re.IGNORECASE):
                   in_link_section = True
-                  header_found = True
                   continue
               
-              if in_link_section and header_found and line:
-                  if line.startswith('===') or line.startswith('---'):
+              # Skip separator lines
+              if line_stripped.startswith('---') or line_stripped.startswith('==='):
+                  if in_link_section and len(links) > 0:
                       break
-                  
-                  match = re.match(r'^(\S+)\s+(\d+)\s*(.*?)$', line)
+                  continue
+              
+              # Parse data lines
+              if in_link_section and line_stripped:
+                  # Match: name (spaces) index (spaces) optional_parent
+                  match = re.match(r'^(\S+)\s+(\d+)\s*(.*?)$', line_stripped)
                   if match:
                       name = match.group(1)
                       index = int(match.group(2))
                       parent_info = match.group(3).strip()
                       
-                      parent = None
-                      if parent_info:
-                          parent_match = re.match(r'^(\S+)\(', parent_info)
-                          if parent_match:
-                              parent = parent_match.group(1)
+                      # Extract parent name (it's just the parent name, no parentheses)
+                      parent = parent_info if parent_info else None
                       
                       links.append({
                           'name': name,
                           'index': index,
                           'parent': parent
                       })
+                      print(f"Parsed: {name} (index={index}, parent={parent})")
           
           if len(links) == 0:
               print("ERROR: No links were parsed")
+              print("Debug: in_link_section =", in_link_section)
               sys.exit(1)
           
           with open('outputs/links.json', 'w') as f:
               json.dump({'links': links}, f, indent=2)
           
-          print(f"Successfully parsed {len(links)} links")
+          print(f"\nSuccessfully parsed {len(links)} links")
           print(json.dumps({'links': links}, indent=2))
           PYEOF
           
