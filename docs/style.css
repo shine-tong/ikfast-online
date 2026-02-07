@@ -707,6 +707,23 @@ code {
     width: 90%;
 }
 
+.error-section.error .error-message h3 {
+    color: var(--danger-color);
+}
+
+.error-section.success {
+    background: #d4edda;
+    border: 2px solid #28a745;
+}
+
+.error-section.success .error-message h3 {
+    color: #28a745;
+}
+
+.error-section.success .error-message h3::before {
+    content: "✓ ";
+}
+
 .error-message h3 {
     color: var(--danger-color);
     margin-bottom: 15px;

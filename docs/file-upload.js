@@ -453,9 +453,19 @@ class FileUploadComponent {
      */
     showError(message) {
         if (this.elements && this.elements.errorDisplay) {
-            this.elements.errorDisplay.textContent = message;
-            this.elements.errorDisplay.style.display = 'block';
-            this.elements.errorDisplay.className = 'upload-message error';
+            // Check if errorDisplay is the global error section
+            const errorText = this.elements.errorDisplay.querySelector('#error-text');
+            if (errorText) {
+                // Using global error section
+                errorText.textContent = message;
+                this.elements.errorDisplay.style.display = 'block';
+                this.elements.errorDisplay.className = 'error-section error';
+            } else {
+                // Using component-specific error display
+                this.elements.errorDisplay.textContent = message;
+                this.elements.errorDisplay.style.display = 'block';
+                this.elements.errorDisplay.className = 'upload-message error';
+            }
         } else {
             console.error('Upload Error:', message);
         }
@@ -467,9 +477,26 @@ class FileUploadComponent {
      */
     showSuccess(message) {
         if (this.elements && this.elements.errorDisplay) {
-            this.elements.errorDisplay.textContent = message;
-            this.elements.errorDisplay.style.display = 'block';
-            this.elements.errorDisplay.className = 'upload-message success';
+            // Check if errorDisplay is the global error section
+            const errorText = this.elements.errorDisplay.querySelector('#error-text');
+            if (errorText) {
+                // Using global error section
+                errorText.textContent = message;
+                this.elements.errorDisplay.style.display = 'block';
+                this.elements.errorDisplay.className = 'error-section success';
+                
+                // Auto-hide success message after 3 seconds
+                setTimeout(() => {
+                    if (this.elements.errorDisplay.className.includes('success')) {
+                        this.elements.errorDisplay.style.display = 'none';
+                    }
+                }, 3000);
+            } else {
+                // Using component-specific error display
+                this.elements.errorDisplay.textContent = message;
+                this.elements.errorDisplay.style.display = 'block';
+                this.elements.errorDisplay.className = 'upload-message success';
+            }
         } else {
             console.log('Upload Success:', message);
         }
@@ -481,7 +508,16 @@ class FileUploadComponent {
     clearError() {
         if (this.elements && this.elements.errorDisplay) {
             this.elements.errorDisplay.style.display = 'none';
-            this.elements.errorDisplay.textContent = '';
+            // Reset className to default
+            const errorText = this.elements.errorDisplay.querySelector('#error-text');
+            if (errorText) {
+                // Using global error section
+                this.elements.errorDisplay.className = 'error-section';
+                errorText.textContent = '';
+            } else {
+                // Using component-specific error display
+                this.elements.errorDisplay.textContent = '';
+            }
         }
     }
     

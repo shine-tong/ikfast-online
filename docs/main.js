@@ -150,7 +150,7 @@ function initializeComponents() {
         progressBar: document.querySelector('#upload-progress .progress-fill'),
         progressText: elements.fileInfo,
         fileInfo: elements.fileInfo,
-        errorDisplay: document.createElement('div') // Will be added to upload section
+        errorDisplay: elements.errorSection // Use global error section
     });
     
     // Link Info Component
@@ -351,8 +351,8 @@ async function handleWorkflowSubmit() {
         
         const result = await workflowTriggerComponent.triggerWorkflow({
             mode: 'generate',
-            base_link: params.baseLink,
-            ee_link: params.eeLink,
+            base_link: String(params.baseLink),
+            ee_link: String(params.eeLink),
             iktype: params.ikType
         });
         
