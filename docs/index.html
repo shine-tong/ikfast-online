@@ -337,7 +337,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <!-- Configuration -->
-    <script src="config.js?v=2"></script>
+    <script src="js/config.js?v=2"></script>
     <script>
         // Ensure CONFIG is loaded before proceeding
         if (typeof CONFIG === 'undefined') {
@@ -349,32 +349,18 @@
     </script>
     
     <!-- Existing Module Scripts - deferred for better performance -->
-    <script src="js/modules/auth.module.js" defer></script>
-    <script src="js/modules/github-api.module.js" defer></script>
-    <script src="js/modules/file-upload.module.js" defer></script>
-    <script src="js/modules/link-info.module.js" defer></script>
-    <script src="js/modules/parameter-config.module.js" defer></script>
-    <script src="js/modules/workflow-trigger.module.js" defer></script>
-    <script src="js/modules/status-monitor.module.js" defer></script>
-    <script src="js/modules/log-viewer.module.js" defer></script>
-    <script src="js/modules/download.module.js" defer></script>
-    <script src="js/modules/error-handler.module.js" defer></script>
-    <script src="js/modules/file-verification.module.js" defer></script>
-    <script src="js/modules/quota-warning.module.js" defer></script>
-    
-    <!-- Legacy Scripts (for backward compatibility) - deferred -->
-    <script src="auth.js" defer></script>
-    <script src="github-api.js" defer></script>
-    <script src="file-upload.js" defer></script>
-    <script src="link-info.js" defer></script>
-    <script src="parameter-config.js" defer></script>
-    <script src="workflow-trigger.js" defer></script>
-    <script src="status-monitor.js" defer></script>
-    <script src="log-viewer.js" defer></script>
-    <script src="download.js" defer></script>
-    <script src="error-handler.js" defer></script>
-    <script src="file-verification.js" defer></script>
-    <script src="quota-warning.js" defer></script>
+    <script src="js/modules/auth.module.js" type="module"></script>
+    <script src="js/modules/github-api.module.js" type="module"></script>
+    <script src="js/modules/file-upload.module.js" type="module"></script>
+    <script src="js/modules/link-info.module.js" type="module"></script>
+    <script src="js/modules/parameter-config.module.js" type="module"></script>
+    <script src="js/modules/workflow-trigger.module.js" type="module"></script>
+    <script src="js/modules/status-monitor.module.js" type="module"></script>
+    <script src="js/modules/log-viewer.module.js" type="module"></script>
+    <script src="js/modules/download.module.js" type="module"></script>
+    <script src="js/modules/error-handler.module.js" type="module"></script>
+    <script src="js/modules/file-verification.module.js" type="module"></script>
+    <script src="js/modules/quota-warning.module.js" type="module"></script>
     
     <!-- New UI Enhancement Scripts - deferred -->
     <script src="js/navigation.js" defer></script>
@@ -382,6 +368,6 @@
     <script src="js/ui-adapter.js" defer></script>
     
     <!-- Main Application Script - deferred -->
-    <script src="main.js" defer></script>
+    <script src="js/main.js" defer></script>
 </body>
 </html>
