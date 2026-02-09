@@ -433,7 +433,7 @@ export class FileUploadComponent {
     resetUploadButton() {
         if (this.elements.uploadButton) {
             this.elements.uploadButton.disabled = false;
-            this.elements.uploadButton.textContent = 'Upload File';
+            this.elements.uploadButton.textContent = '上传文件';
         }
     }
     

@@ -285,6 +285,9 @@ function setupEventListeners() {
     // Link Selection - handled by LinkInfoComponent
     window.addEventListener('linkSelected', handleLinkSelected);
     
+    // Link Info Fetched - update success message
+    window.addEventListener('linkInfoFetched', handleLinkInfoFetched);
+    
     // Parameters - validation is handled by ParameterConfigComponent
     elements.baseLinkInput.addEventListener('input', handleParameterChange);
     elements.eeLinkInput.addEventListener('input', handleParameterChange);
@@ -323,11 +326,28 @@ async function handleFileUploaded(event) {
     AppState.file.filename = event.detail.filename;
     AppState.file.sha = event.detail.sha;
     
-    // Show success message
-    showSuccess('Operation successful');
+    // Show success message with info about link fetching (don't auto-hide)
+    showSuccess('URDF 文件上传成功，请等待 1-2 分钟获取机器人链接信息...', 0);
     
     // Link info component will automatically fetch link info
     // We just need to update UI state
+    updateUIState();
+}
+
+/**
+ * Handle link info fetched event
+ * @param {CustomEvent} event - Link info fetched event
+ */
+function handleLinkInfoFetched(event) {
+    const { links, count } = event.detail;
+    
+    // Update the success message
+    showSuccess(`机器人链接信息获取成功！共找到 ${count} 个链接。`, 5000);
+    
+    // Update application state
+    AppState.links = links;
+    
+    // Update UI state
     updateUIState();
 }
 
@@ -654,18 +674,22 @@ function showError(message) {
 
 /**
  * Show success message
+ * @param {string} message - Success message to display
+ * @param {number} autoHideDelay - Delay in milliseconds before auto-hiding (0 = no auto-hide)
  */
-function showSuccess(message) {
+function showSuccess(message, autoHideDelay = 5000) {
     elements.errorText.textContent = message;
     elements.errorSection.style.display = 'block';
     elements.errorSection.className = 'error-section success';
     
-    // Auto-hide success messages after 5 seconds
-    setTimeout(() => {
-        if (elements.errorSection.className.includes('success')) {
-            hideError();
-        }
-    }, 5000);
+    // Auto-hide success messages after specified delay
+    if (autoHideDelay > 0) {
+        setTimeout(() => {
+            if (elements.errorSection.className.includes('success')) {
+                hideError();
+            }
+        }, autoHideDelay);
+    }
 }
 
 /**

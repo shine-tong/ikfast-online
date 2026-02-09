@@ -161,6 +161,14 @@ export class LinkInfoComponent {
             this.links = links;
             this.renderLinkTable(links);
             
+            // Dispatch event to notify that link info has been fetched
+            window.dispatchEvent(new CustomEvent('linkInfoFetched', {
+                detail: {
+                    links: links,
+                    count: links.length
+                }
+            }));
+            
         } catch (error) {
             console.error('Error fetching logs:', error);
             throw new Error(`Failed to parse link information: ${error.message}`);

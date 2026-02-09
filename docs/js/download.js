@@ -211,7 +211,7 @@ class DownloadComponent {
             // Reset button state
             if (this.elements.downloadSolverButton) {
                 this.elements.downloadSolverButton.disabled = false;
-                this.elements.downloadSolverButton.textContent = 'Download ikfast_solver.cpp';
+                this.elements.downloadSolverButton.textContent = '下载 ikfast_solver.cpp';
             }
         }
     }
@@ -247,7 +247,7 @@ class DownloadComponent {
             // Reset button state
             if (this.elements.downloadLogButton) {
                 this.elements.downloadLogButton.disabled = false;
-                this.elements.downloadLogButton.textContent = 'Download build.log';
+                this.elements.downloadLogButton.textContent = '下载 build.log';
             }
         }
     }
