@@ -411,8 +411,8 @@ async function handleWorkflowSubmit() {
         
         const result = await workflowTriggerComponent.triggerWorkflow({
             mode: 'generate',
-            base_link: String(params.baseLink),
-            ee_link: String(params.eeLink),
+            base_link: params.baseLink,
+            ee_link: params.eeLink,
             iktype: params.ikType
         });
         

@@ -46,9 +46,9 @@ export class WorkflowTriggerComponent {
      * Trigger a workflow with parameters
      * @param {Object} parameters - Workflow parameters
      * @param {string} parameters.mode - Workflow mode ('info' or 'generate')
-     * @param {number} [parameters.baseLink] - Base link index (required for generate mode)
-     * @param {number} [parameters.eeLink] - End effector link index (required for generate mode)
-     * @param {string} [parameters.ikType] - IK solver type (required for generate mode)
+     * @param {number} [parameters.base_link] - Base link index (required for generate mode)
+     * @param {number} [parameters.ee_link] - End effector link index (required for generate mode)
+     * @param {string} [parameters.iktype] - IK solver type (required for generate mode)
      * @returns {Promise<{success: boolean, runId?: number}>}
      */
     async triggerWorkflow(parameters) {
@@ -68,13 +68,13 @@ export class WorkflowTriggerComponent {
             
             // Add parameters for generate mode
             if (parameters.mode === 'generate') {
-                if (parameters.baseLink === undefined || parameters.eeLink === undefined) {
-                    throw new Error('Generate mode requires baseLink and eeLink parameters');
+                if (parameters.base_link === undefined || parameters.ee_link === undefined) {
+                    throw new Error('Generate mode requires base_link and ee_link parameters');
                 }
                 
-                inputs.base_link = String(parameters.baseLink);
-                inputs.ee_link = String(parameters.eeLink);
-                inputs.iktype = parameters.ikType || 'transform6d';
+                inputs.base_link = String(parameters.base_link);
+                inputs.ee_link = String(parameters.ee_link);
+                inputs.iktype = parameters.iktype || 'transform6d';
             }
             
             // Trigger the workflow
