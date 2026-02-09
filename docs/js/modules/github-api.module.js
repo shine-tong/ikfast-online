@@ -196,7 +196,7 @@ export class GitHubAPIClient {
      * @param {string} ref - Git ref (branch/tag)
      * @returns {Promise<{success: boolean}>}
      */
-    async triggerWorkflow(workflowId, inputs = {}, ref = 'main') {
+    async triggerWorkflow(workflowId, inputs = {}, ref = 'dev') {
         const endpoint = CONFIG.API_ENDPOINTS.TRIGGER_WORKFLOW
             .replace('{owner}', CONFIG.REPO_OWNER)
             .replace('{repo}', CONFIG.REPO_NAME)

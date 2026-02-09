@@ -189,7 +189,7 @@ export class AuthenticationManager {
         // Disable button and show loading state
         if (this.elements.authButton) {
             this.elements.authButton.disabled = true;
-            this.elements.authButton.textContent = 'Verify涓?..';
+            this.elements.authButton.textContent = '验证中...';
         }
         
         try {
@@ -198,7 +198,7 @@ export class AuthenticationManager {
             if (result.valid) {
                 this.setToken(token);
                 this.scopes = result.scopes;
-                this.showSuccess('Token Verify鎴愬姛');
+                this.showSuccess('Token 验证成功');
                 this.updateUIState();
                 
                 // Trigger custom event for other components
@@ -207,18 +207,18 @@ export class AuthenticationManager {
                 }));
             } else {
                 this.clearToken();
-                this.showError(result.error || 'Token Verify澶辫触');
+                this.showError(result.error || 'Token 验证失败');
                 this.updateUIState();
             }
         } catch (error) {
             this.clearToken();
-            this.showError(`Verify澶辫触: ${error.message}`);
+            this.showError(`验证失败: ${error.message}`);
             this.updateUIState();
         } finally {
             // Re-enable button
             if (this.elements.authButton) {
                 this.elements.authButton.disabled = false;
-                this.elements.authButton.textContent = 'Verify';
+                this.elements.authButton.textContent = '验证';
             }
         }
     }
@@ -245,7 +245,7 @@ export class AuthenticationManager {
                 this.elements.authSection.classList.remove('authenticated');
             }
             if (this.elements.authButton) {
-                this.elements.authButton.textContent = 'Verify';
+                this.elements.authButton.textContent = '验证';
                 this.elements.authButton.classList.remove('authenticated');
             }
         }
