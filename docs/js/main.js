@@ -515,12 +515,12 @@ async function handleWorkflowComplete(status, run) {
         console.error('Failed to fetch final logs:', error);
     }
     
-    // Enable downloads if successful
-    if (status === 'completed') {
-        downloadComponent.setWorkflowStatus('completed', run.id);
-        showSuccess('Workflow execution successful! You can now download the result files.');
+    // Enable downloads if successful (check conclusion, not mapped status)
+    if (status === 'completed' && run.conclusion === 'success') {
+        await downloadComponent.setWorkflowStatus('completed', run.id);
+        showSuccess('工作流执行成功！您现在可以下载结果文件。');
     } else {
-        showError(`Workflow execution failed: ${run.conclusion}`);
+        showError(`工作流执行失败: ${run.conclusion || 'unknown'}`);
     }
     
     // Re-enable submit button for new submissions
