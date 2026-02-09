@@ -310,7 +310,10 @@ export class FileUploadComponent {
             this.showProgress(100);
             
             // Show success message
-            this.showSuccess('File uploaded successfully!');
+            this.showSuccess('文件上传成功！');
+            
+            // Show status message about link info fetching
+            this.showStatusMessage('URDF 文件上传成功，请等待 1-2 分钟获取机器人链接信息...');
             
             // Trigger custom event for other components
             window.dispatchEvent(new CustomEvent('fileUploaded', {
@@ -484,6 +487,28 @@ export class FileUploadComponent {
         if (this.elements && this.elements.errorDisplay) {
             this.elements.errorDisplay.style.display = 'none';
             this.elements.errorDisplay.textContent = '';
+        }
+    }
+    
+    /**
+     * Show status message
+     * @param {string} message - Status message
+     */
+    showStatusMessage(message) {
+        if (this.elements && this.elements.statusMessage) {
+            this.elements.statusMessage.textContent = message;
+            this.elements.statusMessage.style.display = 'block';
+            this.elements.statusMessage.className = 'upload-message info';
+        }
+    }
+    
+    /**
+     * Clear status message
+     */
+    clearStatusMessage() {
+        if (this.elements && this.elements.statusMessage) {
+            this.elements.statusMessage.style.display = 'none';
+            this.elements.statusMessage.textContent = '';
         }
     }
     

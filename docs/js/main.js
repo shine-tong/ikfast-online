@@ -214,6 +214,7 @@ function initializeComponents() {
         progressBar: document.querySelector('#upload-progress .progress-fill'),
         progressText: elements.fileInfo,
         fileInfo: elements.fileInfo,
+        statusMessage: document.getElementById('upload-status-message'),
         errorDisplay: elements.errorSection // Use global error section
     });
     
@@ -326,8 +327,8 @@ async function handleFileUploaded(event) {
     AppState.file.filename = event.detail.filename;
     AppState.file.sha = event.detail.sha;
     
-    // Show success message with info about link fetching (don't auto-hide)
-    showSuccess('URDF 文件上传成功，请等待 1-2 分钟获取机器人链接信息...', 0);
+    // File upload component will show the status message
+    // No need to show global success message here
     
     // Link info component will automatically fetch link info
     // We just need to update UI state
@@ -341,8 +342,18 @@ async function handleFileUploaded(event) {
 function handleLinkInfoFetched(event) {
     const { links, count } = event.detail;
     
-    // Update the success message
-    showSuccess(`机器人链接信息获取成功！共找到 ${count} 个链接。`, 5000);
+    // Update the status message in file upload section
+    const uploadStatusMessage = document.getElementById('upload-status-message');
+    if (uploadStatusMessage) {
+        uploadStatusMessage.textContent = `机器人链接信息获取成功！共找到 ${count} 个链接。`;
+        uploadStatusMessage.className = 'upload-message success';
+        uploadStatusMessage.style.display = 'block';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            uploadStatusMessage.style.display = 'none';
+        }, 5000);
+    }
     
     // Update application state
     AppState.links = links;
