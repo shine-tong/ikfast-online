@@ -6,6 +6,7 @@ const CONFIG = {
     // GitHub Repository Configuration
     REPO_OWNER: 'shine-tong',
     REPO_NAME: 'ikfast-online',
+    REPO_BRANCH: 'dev', // Default branch for workflow triggers
     
     // GitHub Actions Workflow
     WORKFLOW_FILE: 'ikfast.yml',
@@ -134,3 +135,6 @@ Object.freeze(CONFIG.API_ENDPOINTS);
 if (typeof window !== 'undefined') {
     window.CONFIG = CONFIG;
 }
+
+// Export for ES6 modules
+export { CONFIG };

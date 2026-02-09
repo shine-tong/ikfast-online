@@ -4,6 +4,8 @@
  * ES Module version for testing
  */
 
+import { CONFIG } from '../config.js';
+
 export class GitHubAPIClient {
     constructor(authManager) {
         this.authManager = authManager;
@@ -12,8 +14,8 @@ export class GitHubAPIClient {
     }
     
     /**
-     * Make a base request to GitHub API with authentication
-     * @param {string} endpoint - API endpoint (relative to base URL)
+     * Make a base request to GitHub API
+     * @param {string} endpoint - API endpoint
      * @param {Object} options - Fetch options
      * @returns {Promise<Response>}
      * @private
@@ -25,7 +27,7 @@ export class GitHubAPIClient {
             throw new GitHubAPIError('Not authenticated', 401, 'No authentication token available');
         }
         
-        const url = endpoint.startsWith('http') ? endpoint : `${this.baseURL}${endpoint}`;
+        const url = `${this.baseURL}${endpoint}`;
         
         const headers = {
             'Authorization': `Bearer ${token}`,
@@ -194,7 +196,7 @@ export class GitHubAPIClient {
      * @param {string} ref - Git ref (branch/tag)
      * @returns {Promise<{success: boolean}>}
      */
-    async triggerWorkflow(workflowId, inputs = {}, ref = 'main') {
+    async triggerWorkflow(workflowId, inputs = {}, ref = 'dev') {
         const endpoint = CONFIG.API_ENDPOINTS.TRIGGER_WORKFLOW
             .replace('{owner}', CONFIG.REPO_OWNER)
             .replace('{repo}', CONFIG.REPO_NAME)
@@ -426,7 +428,7 @@ export class GitHubAPIClient {
             totalMinutesUsed: usage.totalMinutesUsed,
             includedMinutes: usage.includedMinutes,
             message: shouldWarn 
-                ? `璀﹀憡: GitHub Actions 閰嶉宸蹭娇鐢?${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} 鍒嗛挓)`
+                ? `Warning: GitHub Actions quota used ${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} minutes)`
                 : ''
         };
     }

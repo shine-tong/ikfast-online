@@ -1,9 +1,11 @@
-/**
+﻿/**
  * DownloadComponent - Handles artifact download and file extraction
  * ES Module version for testing
  */
 
-class DownloadComponent {
+import { CONFIG } from '../config.js';
+
+export class DownloadComponent {
     constructor(githubAPIClient) {
         this.githubAPIClient = githubAPIClient;
         this.elements = null;
@@ -26,9 +28,11 @@ class DownloadComponent {
      * @param {string} status - Workflow status (completed, failed, etc.)
      * @param {number} runId - Workflow run ID
      */
-    setWorkflowStatus(status, runId) {
+    async setWorkflowStatus(status, runId) {
         this.workflowStatus = status;
         this.runId = runId;
+        
+        console.log('Download component: setWorkflowStatus called', { status, runId });
         
         // Enable downloads only if workflow completed successfully
         const isCompleted = status === 'completed';
@@ -36,7 +40,8 @@ class DownloadComponent {
         
         // Fetch artifacts if completed
         if (isCompleted && runId) {
-            this.fetchArtifacts(runId);
+            console.log('Fetching artifacts for run ID:', runId);
+            await this.fetchArtifacts(runId);
         }
     }
     
@@ -47,7 +52,15 @@ class DownloadComponent {
      */
     async fetchArtifacts(runId) {
         try {
+            console.log('Fetching artifacts from GitHub API...');
             this.artifacts = await this.githubAPIClient.listArtifacts(runId);
+            console.log('Artifacts fetched:', this.artifacts);
+            
+            if (this.artifacts.length === 0) {
+                console.warn('No artifacts found for this workflow run');
+                this.showError('未找到构建产物，请稍后重试或检查工作流日志');
+                return [];
+            }
             
             // Update UI with artifact information
             this.updateArtifactInfo();
@@ -55,7 +68,7 @@ class DownloadComponent {
             return this.artifacts;
         } catch (error) {
             console.error('Failed to fetch artifacts:', error);
-            this.showError(CONFIG.ERROR_MESSAGES.ARTIFACT_NOT_FOUND);
+            this.showError(`获取构建产物失败: ${error.message}`);
             return [];
         }
     }
@@ -88,7 +101,7 @@ class DownloadComponent {
             // Show artifact expiration info
             if (this.elements.artifactInfo) {
                 const expiresAt = new Date(resultArtifact.expiresAt);
-                this.elements.artifactInfo.textContent = `Artifact expires at ${expiresAt.toLocaleString()}`;
+                this.elements.artifactInfo.textContent = `Artifact 将于 ${expiresAt.toLocaleString()} 过期`;
                 this.elements.artifactInfo.style.display = 'block';
             }
         }
@@ -101,22 +114,29 @@ class DownloadComponent {
      */
     async downloadAndExtract(filename) {
         if (!this.runId) {
-            throw new Error('No workflow run ID available');
+            throw new Error('没有可用的工作流运行 ID');
         }
+        
+        console.log('Downloading artifact, looking for file:', filename);
+        console.log('Available artifacts:', this.artifacts);
         
         // Find the artifact
         const artifact = this.artifacts.find(a => a.name === CONFIG.ARTIFACT_NAME);
         
         if (!artifact) {
-            throw new Error(CONFIG.ERROR_MESSAGES.ARTIFACT_NOT_FOUND);
+            console.error('Artifact not found. Expected name:', CONFIG.ARTIFACT_NAME);
+            throw new Error(`未找到名为 "${CONFIG.ARTIFACT_NAME}" 的构建产物`);
         }
         
         try {
+            console.log('Downloading artifact ID:', artifact.id);
             // Download artifact ZIP
             const zipBlob = await this.githubAPIClient.downloadArtifact(artifact.id);
+            console.log('Artifact downloaded, size:', zipBlob.size);
             
             // Extract specific file from ZIP
             const extractedFile = await this.extractFileFromZip(zipBlob, filename);
+            console.log('File extracted successfully:', filename);
             
             return extractedFile;
         } catch (error) {
@@ -192,7 +212,7 @@ class DownloadComponent {
             // Show loading state
             if (this.elements.downloadSolverButton) {
                 this.elements.downloadSolverButton.disabled = true;
-                this.elements.downloadSolverButton.textContent = 'Downloading...';
+                this.elements.downloadSolverButton.textContent = '下载中...';
             }
             
             // Download and extract
@@ -206,12 +226,12 @@ class DownloadComponent {
             
         } catch (error) {
             console.error('Solver download failed:', error);
-            this.showError(`涓嬭浇澶辫触: ${error.message}`);
+            this.showError(`Download failed: ${error.message}`);
         } finally {
             // Reset button state
             if (this.elements.downloadSolverButton) {
                 this.elements.downloadSolverButton.disabled = false;
-                this.elements.downloadSolverButton.textContent = 'Download ikfast_solver.cpp';
+                this.elements.downloadSolverButton.textContent = '下载 ikfast_solver.cpp';
             }
         }
     }
@@ -228,7 +248,7 @@ class DownloadComponent {
             // Show loading state
             if (this.elements.downloadLogButton) {
                 this.elements.downloadLogButton.disabled = true;
-                this.elements.downloadLogButton.textContent = 'Downloading...';
+                this.elements.downloadLogButton.textContent = '下载中...';
             }
             
             // Download and extract
@@ -238,16 +258,16 @@ class DownloadComponent {
             this.triggerDownload(blob, 'build.log');
             
             // Show success message
-            this.showSuccess('build.log downloaded successfully');
+            this.showSuccess('build.log 下载成功');
             
         } catch (error) {
             console.error('Log download failed:', error);
-            this.showError(`涓嬭浇澶辫触: ${error.message}`);
+            this.showError(`Download failed: ${error.message}`);
         } finally {
             // Reset button state
             if (this.elements.downloadLogButton) {
                 this.elements.downloadLogButton.disabled = false;
-                this.elements.downloadLogButton.textContent = 'Download build.log';
+                this.elements.downloadLogButton.textContent = '下载 build.log';
             }
         }
     }

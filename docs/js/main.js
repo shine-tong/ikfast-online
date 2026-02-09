@@ -1,8 +1,23 @@
-/**
+﻿/**
  * Main entry point for IKFast Online Generator
  * This file initializes the application and sets up event listeners
  * Integrates all components and manages application state
  */
+
+// Import configuration
+import { CONFIG } from './config.js';
+
+// Import all required modules
+import { AuthenticationManager } from './modules/auth.module.js';
+import { GitHubAPIClient } from './modules/github-api.module.js';
+import { FileUploadComponent } from './modules/file-upload.module.js';
+import { LinkInfoComponent } from './modules/link-info.module.js';
+import { ParameterConfigComponent } from './modules/parameter-config.module.js';
+import { WorkflowTriggerComponent } from './modules/workflow-trigger.module.js';
+import { StatusMonitorComponent } from './modules/status-monitor.module.js';
+import { LogViewerComponent } from './modules/log-viewer.module.js';
+import { DownloadComponent } from './modules/download.module.js';
+import { GlobalErrorHandler } from './modules/error-handler.module.js';
 
 // Initialize AuthenticationManager
 const authManager = new AuthenticationManager();
@@ -19,6 +34,10 @@ const statusMonitorComponent = new StatusMonitorComponent(githubAPI);
 const logViewerComponent = new LogViewerComponent(githubAPI);
 const downloadComponent = new DownloadComponent(githubAPI);
 const errorHandler = new GlobalErrorHandler();
+
+// Initialize UI enhancement components
+let navigationManager = null;
+let animationManager = null;
 
 // Application State
 const AppState = {
@@ -114,7 +133,12 @@ const elements = {
  * Initialize the application
  */
 function initializeApp() {
-    console.log('Initializing IKFast Online Generator...');
+    
+    // Add resource loading error listener
+    setupResourceErrorHandling();
+    
+    // Check browser compatibility
+    checkBrowserCompatibility();
     
     // Initialize AuthenticationManager with UI elements
     authManager.initializeUI({
@@ -127,6 +151,48 @@ function initializeApp() {
     // Initialize all components with their UI elements
     initializeComponents();
     
+    // Initialize NavigationManager for enhanced navigation
+    try {
+        if (typeof NavigationManager !== 'undefined') {
+            navigationManager = new NavigationManager();
+            navigationManager.initialize();
+        } else {
+            console.warn('NavigationManager not available');
+        }
+    } catch (error) {
+        console.error('Failed to initialize NavigationManager:', error);
+        handleModuleIntegrationError('NavigationManager', error);
+    }
+    
+    // Initialize AnimationManager for enhanced animations
+    try {
+        if (typeof AnimationManager !== 'undefined') {
+            animationManager = new AnimationManager();
+            animationManager.initialize();
+        } else {
+            console.warn('AnimationManager not available');
+        }
+    } catch (error) {
+        console.error('Failed to initialize AnimationManager:', error);
+        handleModuleIntegrationError('AnimationManager', error);
+    }
+    
+    // Adapt existing components to new UI using UIAdapter
+    try {
+        if (typeof UIAdapter !== 'undefined') {
+            UIAdapter.initializeAll({
+                fileUpload: fileUploadComponent,
+                statusMonitor: statusMonitorComponent,
+                logViewer: logViewerComponent
+            });
+        } else {
+            console.warn('UIAdapter not available');
+        }
+    } catch (error) {
+        console.error('Failed to apply UI adaptations:', error);
+        handleModuleIntegrationError('UIAdapter', error);
+    }
+    
     // Set up event listeners and data flow
     setupEventListeners();
     
@@ -135,8 +201,6 @@ function initializeApp() {
     
     // Initialize UI state
     updateUIState();
-    
-    console.log('Application initialized successfully');
 }
 
 /**
@@ -150,6 +214,7 @@ function initializeComponents() {
         progressBar: document.querySelector('#upload-progress .progress-fill'),
         progressText: elements.fileInfo,
         fileInfo: elements.fileInfo,
+        statusMessage: document.getElementById('upload-status-message'),
         errorDisplay: elements.errorSection // Use global error section
     });
     
@@ -211,7 +276,6 @@ function setupEventListeners() {
     // Authentication is handled by AuthenticationManager
     // Listen for authentication success event
     window.addEventListener('authenticationSuccess', (event) => {
-        console.log('Authentication successful, scopes:', event.detail.scopes);
         updateUIState();
     });
     
@@ -221,6 +285,9 @@ function setupEventListeners() {
     
     // Link Selection - handled by LinkInfoComponent
     window.addEventListener('linkSelected', handleLinkSelected);
+    
+    // Link Info Fetched - update success message
+    window.addEventListener('linkInfoFetched', handleLinkInfoFetched);
     
     // Parameters - validation is handled by ParameterConfigComponent
     elements.baseLinkInput.addEventListener('input', handleParameterChange);
@@ -254,18 +321,44 @@ function setupComponentEventHandlers() {
  * @param {CustomEvent} event - File uploaded event
  */
 async function handleFileUploaded(event) {
-    console.log('File uploaded:', event.detail);
     
     // Update application state
     AppState.file.uploaded = true;
     AppState.file.filename = event.detail.filename;
     AppState.file.sha = event.detail.sha;
     
-    // Show success message
-    showSuccess('Operation successful');
+    // File upload component will show the status message
+    // No need to show global success message here
     
     // Link info component will automatically fetch link info
     // We just need to update UI state
+    updateUIState();
+}
+
+/**
+ * Handle link info fetched event
+ * @param {CustomEvent} event - Link info fetched event
+ */
+function handleLinkInfoFetched(event) {
+    const { links, count } = event.detail;
+    
+    // Update the status message in file upload section
+    const uploadStatusMessage = document.getElementById('upload-status-message');
+    if (uploadStatusMessage) {
+        uploadStatusMessage.textContent = `机器人链接信息获取成功！共找到 ${count} 个链接。`;
+        uploadStatusMessage.className = 'upload-message success';
+        uploadStatusMessage.style.display = 'block';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            uploadStatusMessage.style.display = 'none';
+        }, 5000);
+    }
+    
+    // Update application state
+    AppState.links = links;
+    
+    // Update UI state
     updateUIState();
 }
 
@@ -275,8 +368,6 @@ async function handleFileUploaded(event) {
  */
 function handleLinkSelected(event) {
     const { link, index, isRoot, isLeaf } = event.detail;
-    
-    console.log('Link selected:', link);
     
     // Auto-fill parameter based on link type
     if (isRoot && !parameterConfigComponent.parameters.baseLink) {
@@ -289,7 +380,7 @@ function handleLinkSelected(event) {
         showInfo(`Set as End Effector Link`);
     } else {
         // Let user decide - show both options
-        showInfo(`宸查€夋嫨閾炬帴: ${link.name} (index ${index})`);
+        showInfo(`Link selected: ${link.name} (index ${index})`);
     }
     
     // Update application state
@@ -351,8 +442,8 @@ async function handleWorkflowSubmit() {
         
         const result = await workflowTriggerComponent.triggerWorkflow({
             mode: 'generate',
-            base_link: String(params.baseLink),
-            ee_link: String(params.eeLink),
+            base_link: params.baseLink,
+            ee_link: params.eeLink,
             iktype: params.ikType
         });
         
@@ -388,7 +479,6 @@ async function handleWorkflowSubmit() {
  * @param {Object} run - Workflow run details
  */
 async function handleStatusChange(status, run) {
-    console.log('Status changed:', status, run);
     
     // Update application state
     AppState.workflow.status = status;
@@ -408,7 +498,6 @@ async function handleStatusChange(status, run) {
  * @param {Object} run - Workflow run details
  */
 async function handleWorkflowComplete(status, run) {
-    console.log('Workflow completed:', status, run);
     
     // Update application state
     AppState.workflow.status = status;
@@ -426,12 +515,12 @@ async function handleWorkflowComplete(status, run) {
         console.error('Failed to fetch final logs:', error);
     }
     
-    // Enable downloads if successful
-    if (status === 'completed') {
-        downloadComponent.setWorkflowStatus('completed', run.id);
-        showSuccess('Workflow execution successful! You can now download the result files.');
+    // Enable downloads if successful (check conclusion, not mapped status)
+    if (status === 'completed' && run.conclusion === 'success') {
+        await downloadComponent.setWorkflowStatus('completed', run.id);
+        showSuccess('工作流执行成功！您现在可以下载结果文件。');
     } else {
-        showError(`Workflow execution failed: ${run.conclusion}`);
+        showError(`工作流执行失败: ${run.conclusion || 'unknown'}`);
     }
     
     // Re-enable submit button for new submissions
@@ -448,7 +537,6 @@ async function handleWorkflowComplete(status, run) {
  * Handle workflow timeout
  */
 function handleWorkflowTimeout() {
-    console.log('Workflow timeout');
     
     // Update application state
     AppState.workflow.status = 'failed';
@@ -597,19 +685,22 @@ function showError(message) {
 
 /**
  * Show success message
+ * @param {string} message - Success message to display
+ * @param {number} autoHideDelay - Delay in milliseconds before auto-hiding (0 = no auto-hide)
  */
-function showSuccess(message) {
+function showSuccess(message, autoHideDelay = 5000) {
     elements.errorText.textContent = message;
     elements.errorSection.style.display = 'block';
     elements.errorSection.className = 'error-section success';
-    console.log('Success:', message);
     
-    // Auto-hide success messages after 5 seconds
-    setTimeout(() => {
-        if (elements.errorSection.className.includes('success')) {
-            hideError();
-        }
-    }, 5000);
+    // Auto-hide success messages after specified delay
+    if (autoHideDelay > 0) {
+        setTimeout(() => {
+            if (elements.errorSection.className.includes('success')) {
+                hideError();
+            }
+        }, autoHideDelay);
+    }
 }
 
 /**
@@ -619,7 +710,6 @@ function showInfo(message) {
     elements.errorText.textContent = message;
     elements.errorSection.style.display = 'block';
     elements.errorSection.className = 'error-section info';
-    console.log('Info:', message);
     
     // Auto-hide info messages after 3 seconds
     setTimeout(() => {
@@ -657,6 +747,100 @@ function scrollLogToBottom() {
     if (elements.autoScroll.checked) {
         elements.logViewer.scrollTop = elements.logViewer.scrollHeight;
     }
+}
+
+/**
+ * Setup resource loading error handling
+ * Monitors CSS, JavaScript, and image loading failures
+ */
+function setupResourceErrorHandling() {
+    window.addEventListener('error', (e) => {
+        // Check if error is from a resource (link, script, img)
+        if (e.target && (e.target.tagName === 'LINK' || e.target.tagName === 'SCRIPT' || e.target.tagName === 'IMG')) {
+            const resourceType = e.target.tagName.toLowerCase();
+            const resourceUrl = e.target.src || e.target.href;
+            
+            console.error(`Resource loading failed [${resourceType}]:`, resourceUrl);
+            
+            // For critical CSS files, show a warning
+            if (resourceType === 'link' && resourceUrl.includes('.css')) {
+                console.warn('CSS file failed to load. Some styles may not be applied.');
+            }
+            
+            // For critical JavaScript files, show a warning
+            if (resourceType === 'script' && resourceUrl.includes('.js')) {
+                console.warn('JavaScript file failed to load. Some features may not work.');
+            }
+        }
+    }, true); // Use capture phase to catch all errors
+}
+
+/**
+ * Check browser compatibility
+ * Detects support for required features and provides fallbacks or warnings
+ */
+function checkBrowserCompatibility() {
+    const requiredFeatures = {
+        'IntersectionObserver': 'IntersectionObserver' in window,
+        'fetch': 'fetch' in window,
+        'Promise': 'Promise' in window,
+        'localStorage': typeof Storage !== 'undefined',
+        'CustomEvent': 'CustomEvent' in window
+    };
+    
+    const unsupportedFeatures = [];
+    
+    for (const [feature, supported] of Object.entries(requiredFeatures)) {
+        if (!supported) {
+            unsupportedFeatures.push(feature);
+            console.warn(`Browser feature not supported: ${feature}`);
+        }
+    }
+    
+    // If critical features are missing, show a warning
+    if (unsupportedFeatures.length > 0) {
+        console.warn('Some browser features are not supported. The application may not work correctly.');
+        console.warn('Unsupported features:', unsupportedFeatures.join(', '));
+        
+        // Show user-friendly message for critical features
+        if (!requiredFeatures.fetch || !requiredFeatures.Promise) {
+            showError('Your browser is not fully supported. Please upgrade to a modern browser for the best experience.');
+        }
+    }
+    
+    // Check for reduced motion preference
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        console.log('User prefers reduced motion - animations will be minimized');
+        document.documentElement.classList.add('reduce-motion');
+    }
+}
+
+/**
+ * Handle module integration errors
+ * Provides graceful degradation when UI enhancement modules fail
+ * @param {string} moduleName - Name of the module that failed
+ * @param {Error} error - The error that occurred
+ */
+function handleModuleIntegrationError(moduleName, error) {
+    console.error(`Module integration error [${moduleName}]:`, error);
+    
+    // Log detailed error information for debugging
+    if (error.stack) {
+        console.error('Stack trace:', error.stack);
+    }
+    
+    // Provide user-friendly fallback messages
+    const fallbackMessages = {
+        'NavigationManager': 'Navigation enhancements are not available. Basic navigation will still work.',
+        'AnimationManager': 'Animation enhancements are not available. The application will function without animations.',
+        'UIAdapter': 'UI enhancements are not available. The application will use basic styling.'
+    };
+    
+    const message = fallbackMessages[moduleName] || `${moduleName} failed to load. Some features may be limited.`;
+    console.warn(message);
+    
+    // Don't show error to user for non-critical UI enhancements
+    // The application should continue to work with basic functionality
 }
 
 // Initialize application when DOM is ready

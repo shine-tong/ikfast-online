@@ -1,9 +1,9 @@
-/**
+﻿/**
  * QuotaWarningComponent - Displays GitHub Actions quota warnings
  * ES Module version for testing
  */
 
-class QuotaWarningComponent {
+export class QuotaWarningComponent {
     constructor(githubAPIClient) {
         this.githubAPIClient = githubAPIClient;
         this.elements = null;
@@ -77,7 +77,7 @@ class QuotaWarningComponent {
         if (this.elements.warningDetails) {
             const percentText = Math.round(quotaInfo.percentUsed * 100);
             this.elements.warningDetails.textContent = 
-                `Used ? ${quotaInfo.totalMinutesUsed} / ${quotaInfo.includedMinutes} 鍒嗛挓 (${percentText}%)`;
+                `Used? ${quotaInfo.totalMinutesUsed} / ${quotaInfo.includedMinutes} Used (${percentText}%)`;
         }
     }
     

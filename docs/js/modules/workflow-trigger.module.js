@@ -1,7 +1,9 @@
-﻿/**
+﻿﻿/**
  * WorkflowTriggerComponent - Handles GitHub Actions workflow triggering
  * ES Module version for testing
  */
+
+import { CONFIG } from '../config.js';
 
 export class WorkflowTriggerComponent {
     constructor(githubAPIClient) {
@@ -32,7 +34,7 @@ export class WorkflowTriggerComponent {
      */
     async handleSubmit() {
         if (this.isWorkflowActive) {
-            this.displayMessage('宸ヤ綔娴佹鍦ㄦ墽琛屼腑锛岃绛夊緟瀹屾垚', 'warning');
+            this.displayMessage('Workflow is running, please wait for completion', 'warning');
             return;
         }
         
@@ -44,9 +46,9 @@ export class WorkflowTriggerComponent {
      * Trigger a workflow with parameters
      * @param {Object} parameters - Workflow parameters
      * @param {string} parameters.mode - Workflow mode ('info' or 'generate')
-     * @param {number} [parameters.baseLink] - Base link index (required for generate mode)
-     * @param {number} [parameters.eeLink] - End effector link index (required for generate mode)
-     * @param {string} [parameters.ikType] - IK solver type (required for generate mode)
+     * @param {number} [parameters.base_link] - Base link index (required for generate mode)
+     * @param {number} [parameters.ee_link] - End effector link index (required for generate mode)
+     * @param {string} [parameters.iktype] - IK solver type (required for generate mode)
      * @returns {Promise<{success: boolean, runId?: number}>}
      */
     async triggerWorkflow(parameters) {
@@ -55,7 +57,7 @@ export class WorkflowTriggerComponent {
             const hasActive = await this.checkActiveWorkflow();
             
             if (hasActive) {
-                this.displayMessage('宸叉湁宸ヤ綔娴佹鍦ㄦ墽琛岋紝璇风瓑寰呭畬鎴?, 'warning');
+                this.displayMessage('Workflow is running, please wait for completion', 'warning');
                 return { success: false };
             }
             
@@ -66,22 +68,22 @@ export class WorkflowTriggerComponent {
             
             // Add parameters for generate mode
             if (parameters.mode === 'generate') {
-                if (parameters.baseLink === undefined || parameters.eeLink === undefined) {
-                    throw new Error('Generate mode requires baseLink and eeLink parameters');
+                if (parameters.base_link === undefined || parameters.ee_link === undefined) {
+                    throw new Error('Generate mode requires base_link and ee_link parameters');
                 }
                 
-                inputs.base_link = String(parameters.baseLink);
-                inputs.ee_link = String(parameters.eeLink);
-                inputs.iktype = parameters.ikType || 'transform6d';
+                inputs.base_link = String(parameters.base_link);
+                inputs.ee_link = String(parameters.ee_link);
+                inputs.iktype = parameters.iktype || 'transform6d';
             }
             
             // Trigger the workflow
-            this.displayMessage('姝ｅ湪瑙﹀彂宸ヤ綔娴?..', 'info');
+            this.displayMessage('Triggering workflow...', 'info');
             
             const result = await this.githubAPIClient.triggerWorkflow(
                 CONFIG.WORKFLOW_FILE,
                 inputs,
-                'main'
+                CONFIG.REPO_BRANCH
             );
             
             if (result.success) {
@@ -95,24 +97,24 @@ export class WorkflowTriggerComponent {
                 
                 if (recentRun) {
                     this.currentRunId = recentRun.id;
-                    this.displayMessage(`宸ヤ綔娴佸凡瑙﹀彂 (Run ID: ${recentRun.id})`, 'success');
+                    this.displayMessage(`Workflow triggered (Run ID: ${recentRun.id})`, 'success');
                     
                     return {
                         success: true,
                         runId: recentRun.id
                     };
                 } else {
-                    this.displayMessage('宸ヤ綔娴佸凡瑙﹀彂锛屼絾鏃犳硶鑾峰彇 Run ID', 'warning');
+                    this.displayMessage('Workflow triggered, but unable to get Run ID', 'warning');
                     return { success: true };
                 }
             } else {
-                this.displayMessage('宸ヤ綔娴佽Е鍙戝け璐?, 'error');
+                this.displayMessage('Workflow trigger failed', 'error');
                 return { success: false };
             }
             
         } catch (error) {
             console.error('Workflow trigger error:', error);
-            this.displayMessage(`宸ヤ綔娴佽Е鍙戝け璐? ${error.message}`, 'error');
+            this.displayMessage(`Workflow trigger failed: ${error.message}`, 'error');
             return { success: false };
         }
     }
@@ -185,10 +187,10 @@ export class WorkflowTriggerComponent {
         if (this.elements && this.elements.submitButton) {
             if (this.isWorkflowActive) {
                 this.elements.submitButton.disabled = true;
-                this.elements.submitButton.textContent = '宸ヤ綔娴佹墽琛屼腑...';
+                this.elements.submitButton.textContent = 'Workflow executing...';
             } else {
                 this.elements.submitButton.disabled = false;
-                this.elements.submitButton.textContent = '鐢熸垚 IKFast 姹傝В鍣?;
+                this.elements.submitButton.textContent = 'Generate IKFast Solver';
             }
         }
     }

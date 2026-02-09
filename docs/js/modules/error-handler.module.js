@@ -51,7 +51,7 @@ export class ErrorDisplayComponent {
         if (retry && onRetry) {
             const retryButton = document.createElement('button');
             retryButton.className = 'error-retry-button';
-            retryButton.textContent = '閲嶈瘯';
+            retryButton.textContent = 'Retry';
             retryButton.onclick = () => {
                 this.clearError(errorElement);
                 onRetry();
@@ -61,7 +61,7 @@ export class ErrorDisplayComponent {
 
         const closeButton = document.createElement('button');
         closeButton.className = 'error-close-button';
-        closeButton.textContent = '脳';
+        closeButton.textContent = '×';
         closeButton.setAttribute('aria-label', 'Close error message');
         closeButton.onclick = () => this.clearError(errorElement);
         buttonContainer.appendChild(closeButton);
@@ -164,7 +164,7 @@ export class GlobalErrorHandler {
      * @param {Function} retry - Retry function
      */
     async handleNetworkError(error, operation, retry) {
-        const message = `缃戠粶杩炴帴澶辫触: ${error.message}`;
+        const message = `Network connection failed: ${error.message}`;
         
         if (retry) {
             const attempts = this.retryAttempts.get(operation) || 0;
@@ -172,7 +172,7 @@ export class GlobalErrorHandler {
             if (attempts < this.maxRetries) {
                 // Show error with retry button
                 this.errorDisplay.showError(
-                    `${message} (灏濊瘯 ${attempts + 1}/${this.maxRetries})`,
+                    `${message} (Attempt ${attempts + 1}/${this.maxRetries})`,
                     {
                         retry: true,
                         onRetry: async () => {
@@ -194,7 +194,7 @@ export class GlobalErrorHandler {
             } else {
                 // Max retries reached
                 this.errorDisplay.showError(
-                    `${message}\n宸茶揪鍒版渶澶ч噸璇曟鏁帮紝璇锋鏌ョ綉缁滆繛鎺ュ悗鎵嬪姩閲嶈瘯銆俙
+                    `${message}\n\nMaximum retry attempts reached. Please check your network connection and try again manually.`
                 );
                 this.retryAttempts.delete(operation);
             }
@@ -211,33 +211,33 @@ export class GlobalErrorHandler {
      * @param {Function} retry - Retry function
      */
     async handleAPIError(error, operation, retry) {
-        let message = `GitHub API 閿欒 (${error.statusCode}): ${error.apiMessage || error.message}`;
+        let message = `GitHub API Error (${error.statusCode}): ${error.apiMessage || error.message}`;
         let showRetry = false;
 
         // Provide specific guidance based on status code
         switch (error.statusCode) {
             case 401:
-                message += '\n\n璁よ瘉澶辫触锛岃妫€鏌?Token 鏄惁鏈夋晥銆?;
+                message += '\n\nAuthentication failed. Please check if your Token is valid.';
                 break;
             case 403:
                 if (error.apiMessage && error.apiMessage.includes('rate limit')) {
-                    message += '\n\nAPI 閫熺巼闄愬埗宸茶揪鍒帮紝璇风◢鍚庡啀璇曘€?;
+                    message += '\n\nAPI rate limit reached. Please try again later.';
                     showRetry = true;
                 } else {
-                    message += '\n\n鏉冮檺涓嶈冻锛岃纭繚 Token 鍏锋湁 repo 鍜?workflow 鏉冮檺銆?;
+                    message += '\n\nInsufficient permissions. Please ensure your Token has repo and workflow permissions.';
                 }
                 break;
             case 404:
-                message += '\n\n璧勬簮鏈壘鍒帮紝璇锋鏌ヤ粨搴撻厤缃槸鍚︽纭€?;
+                message += '\n\nResource not found. Please check your repository configuration.';
                 break;
             case 422:
-                message += '\n\n璇锋眰鍙傛暟鏃犳晥锛岃妫€鏌ヨ緭鍏ユ暟鎹€?;
+                message += '\n\nInvalid request parameters. Please check your input data.';
                 break;
             case 500:
             case 502:
             case 503:
             case 504:
-                message += '\n\nGitHub 鏈嶅姟鏆傛椂涓嶅彲鐢紝璇风◢鍚庨噸璇曘€?;
+                message += '\n\nGitHub service temporarily unavailable. Please try again later.';
                 showRetry = true;
                 break;
             default:
@@ -267,7 +267,7 @@ export class GlobalErrorHandler {
     handleUnknownError(error) {
         console.error('Unexpected error:', error);
         this.errorDisplay.showError(
-            `鍙戠敓鏈煡閿欒: ${error.message}\n璇锋煡鐪嬫祻瑙堝櫒鎺у埗鍙拌幏鍙栬缁嗕俊鎭€俙
+            `An unknown error occurred: ${error.message}\n\nPlease check the browser console for more details.`
         );
     }
 

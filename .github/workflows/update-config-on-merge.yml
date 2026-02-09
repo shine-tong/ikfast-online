@@ -1,0 +1,61 @@
+name: Update Config on Master Merge
+
+# 当 PR 合并到 master 分支时触发
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+
+jobs:
+  update-config:
+    # 只在 PR 被合并（而不是关闭）时运行
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update REPO_BRANCH in config.js
+        run: |
+          echo "Updating REPO_BRANCH from 'dev' to 'master' in config.js..."
+          
+          # 使用 sed 替换 REPO_BRANCH 的值
+          sed -i "s/REPO_BRANCH: 'dev'/REPO_BRANCH: 'master'/g" docs/js/config.js
+          
+          # 显示更改后的内容（用于调试）
+          echo "Updated config.js content:"
+          grep -A 1 "REPO_BRANCH:" docs/js/config.js
+      
+      - name: Check if changes were made
+        id: check_changes
+        run: |
+          if git diff --quiet docs/js/config.js; then
+            echo "No changes needed - REPO_BRANCH is already set to 'master'"
+            echo "changes_made=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in config.js"
+            echo "changes_made=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes_made == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add docs/js/config.js
+          git commit -m "chore: Update REPO_BRANCH to 'master' after merge"
+          git push origin master
+      
+      - name: Summary
+        run: |
+          if [ "${{ steps.check_changes.outputs.changes_made }}" == "true" ]; then
+            echo "✅ Successfully updated REPO_BRANCH to 'master' in config.js"
+          else
+            echo "ℹ️ No update needed - REPO_BRANCH was already set to 'master'"
+          fi

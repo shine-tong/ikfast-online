@@ -4,6 +4,8 @@
  * ES Module version for testing
  */
 
+import { CONFIG } from '../config.js';
+
 export class LinkInfoComponent {
     constructor(githubAPIClient) {
         this.githubAPIClient = githubAPIClient;
@@ -62,7 +64,7 @@ export class LinkInfoComponent {
             const result = await this.githubAPIClient.triggerWorkflow(
                 CONFIG.WORKFLOW_FILE,
                 { mode: 'info' },
-                'main'
+                CONFIG.REPO_BRANCH
             );
             
             if (!result.success) {
@@ -158,6 +160,14 @@ export class LinkInfoComponent {
             
             this.links = links;
             this.renderLinkTable(links);
+            
+            // Dispatch event to notify that link info has been fetched
+            window.dispatchEvent(new CustomEvent('linkInfoFetched', {
+                detail: {
+                    links: links,
+                    count: links.length
+                }
+            }));
             
         } catch (error) {
             console.error('Error fetching logs:', error);
@@ -400,11 +410,11 @@ export class LinkInfoComponent {
             legend.innerHTML = `
                 <div class="legend-item">
                     <span class="legend-color root-link-color"></span>
-                    <span>Root Link (no parent) - 閫傚悎浣滀负 Base Link</span>
+                    <span>Root Link (no parent) - Suitable as Base Link</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color leaf-link-color"></span>
-                    <span>Leaf Link (no children) - 閫傚悎浣滀负 End Effector Link</span>
+                    <span>Leaf Link (no children) - Suitable as End Effector Link</span>
                 </div>
             `;
             this.elements.linkTable.appendChild(legend);
@@ -467,7 +477,7 @@ export class LinkInfoComponent {
         
         if (this.elements && this.elements.fetchButton) {
             this.elements.fetchButton.disabled = show;
-            this.elements.fetchButton.textContent = show ? '鑾峰彇涓?..' : '鑾峰彇閾炬帴淇℃伅';
+            this.elements.fetchButton.textContent = show ? 'Fetching...' : 'Fetch Link Info';
         }
     }
     
@@ -479,7 +489,7 @@ export class LinkInfoComponent {
     updateStatusDisplay(status) {
         if (this.elements && this.elements.statusDisplay) {
             const statusText = CONFIG.STATUS_MESSAGES[status.toUpperCase()] || status;
-            this.elements.statusDisplay.textContent = `鐘舵€? ${statusText}`;
+            this.elements.statusDisplay.textContent = `Status: ${statusText}`;
             this.elements.statusDisplay.style.display = 'block';
         }
     }

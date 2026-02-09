@@ -1,9 +1,17 @@
+<div align="center">
+
 # IKFast Online Generator
 
 🤖 在线生成 IKFast 逆运动学求解器的 Web 平台，本项目所有代码使用 [Kiro](https://kiro.dev/) 生成。
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue)](https://shine-tong.github.io/ikfast-online/)
-[![License: MIT](https://img.shields.io/badge/License-Apache-yellow.svg)](https://opensource.org/licenses/Apache)
+[![License: Apache](https://img.shields.io/badge/License-Apache-yellow.svg)](https://opensource.org/licenses/Apache)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/shine-tong/ikfast-online/releases)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Docker](https://img.shields.io/badge/Docker-OpenRAVE-2496ED.svg)](https://hub.docker.com/r/fishros2/openrave)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF.svg)](https://github.com/features/actions)
+
+</div>
 
 ## 📖 项目简介
 
@@ -21,10 +29,12 @@ IKFast Online Generator 是一个零服务器成本的 Web 应用，让机器人
 ### 🏗️ 技术架构
 
 - **前端**: 原生 JavaScript (ES6+), HTML5, CSS3
+- **UI 设计**: Graphite Creative Studio 模板（浅色主题）
 - **托管**: GitHub Pages (静态站点)
 - **后端**: GitHub Actions (工作流自动化)
 - **执行环境**: Docker (fishros2/openrave 镜像)
 - **API**: GitHub REST API v4
+- **测试**: Vitest + fast-check (属性测试)
 
 ## 📁 项目结构
 
@@ -32,21 +42,47 @@ IKFast Online Generator 是一个零服务器成本的 Web 应用，让机器人
 .
 ├── docs/                         # 前端静态文件（GitHub Pages 部署目录）
 │   ├── index.html               # 主页面
-│   ├── style.css                # 样式文件
-│   ├── config.js                # 配置文件
-│   ├── main.js                  # 主入口
-│   ├── auth.js                  # 认证管理
-│   ├── github-api.js            # GitHub API 客户端
-│   ├── file-upload.js           # 文件上传组件
-│   ├── link-info.js             # 链接信息组件
-│   ├── parameter-config.js      # 参数配置组件
-│   ├── workflow-trigger.js      # 工作流触发组件
-│   ├── status-monitor.js        # 状态监控组件
-│   ├── log-viewer.js            # 日志查看器
-│   ├── download.js              # 下载组件
-│   ├── error-handler.js         # 错误处理
-│   ├── file-verification.js     # 文件验证
-│   └── quota-warning.js         # 配额警告
+│   ├── css/                     # 样式文件
+│   │   ├── graphite-theme.css  # Graphite 主题变量
+│   │   ├── graphite.css        # Graphite 核心样式
+│   │   ├── custom.css          # 自定义样式扩展
+│   │   ├── responsive.css      # 响应式样式
+│   │   └── README.md           # 样式文档
+│   ├── js/                      # JavaScript 文件
+│   │   ├── config.js           # 配置文件
+│   │   ├── main.js             # 主入口
+│   │   ├── navigation.js       # 导航功能
+│   │   ├── animations.js       # 动画效果
+│   │   ├── ui-adapter.js       # UI 适配器
+│   │   ├── auth.js             # 认证功能（非模块版本）
+│   │   ├── file-upload.js      # 文件上传（非模块版本）
+│   │   ├── file-verification.js # 文件验证（非模块版本）
+│   │   ├── github-api.js       # GitHub API（非模块版本）
+│   │   ├── link-info.js        # 链接信息（非模块版本）
+│   │   ├── parameter-config.js # 参数配置（非模块版本）
+│   │   ├── workflow-trigger.js # 工作流触发（非模块版本）
+│   │   ├── status-monitor.js   # 状态监控（非模块版本）
+│   │   ├── log-viewer.js       # 日志查看器（非模块版本）
+│   │   ├── download.js         # 下载功能（非模块版本）
+│   │   ├── error-handler.js    # 错误处理（非模块版本）
+│   │   ├── quota-warning.js    # 配额警告（非模块版本）
+│   │   └── modules/            # ES6 模块版本（用于测试）
+│   │       ├── auth.module.js
+│   │       ├── file-upload.module.js
+│   │       ├── file-verification.module.js
+│   │       ├── github-api.module.js
+│   │       ├── link-info.module.js
+│   │       ├── parameter-config.module.js
+│   │       ├── workflow-trigger.module.js
+│   │       ├── status-monitor.module.js
+│   │       ├── log-viewer.module.js
+│   │       ├── download.module.js
+│   │       ├── error-handler.module.js
+│   │       └── quota-warning.module.js
+│   └── assets/                  # 静态资源
+│       ├── images/             # 图片资源
+│       ├── fonts/              # 字体资源
+│       └── README.md           # 资源说明
 ├── .github/
 │   ├── workflows/
 │   │   └── ikfast.yml           # GitHub Actions 工作流
@@ -65,12 +101,16 @@ IKFast Online Generator 是一个零服务器成本的 Web 应用，让机器人
 ├── test/                        # 测试文件
 │   ├── *.test.js                # 单元测试
 │   ├── *.property.test.js       # 属性测试
-│   └── setup.js                 # 测试配置
+│   ├── helpers/                 # 测试辅助工具
+│   │   └── test-utils.js       # 测试工具函数
+│   ├── setup.js                 # 测试配置
+│   └── README.md                # 测试文档
 ├── .gitignore                   # Git 忽略文件
 ├── .nojekyll                    # 禁用 Jekyll 处理
 ├── package.json                 # 项目依赖
+├── package-lock.json            # 依赖锁定文件
 ├── vitest.config.js             # 测试配置
-├── LICENCE                      # 证书
+├── LICENSE                      # 许可证
 └── README.md                    # 项目说明
 ```
 
@@ -92,12 +132,13 @@ cd ikfast-online
 
 #### 2. 配置仓库信息
 
-编辑 `docs/config.js`，修改以下配置：
+编辑 `docs/js/config.js`，修改以下配置：
 
 ```javascript
 const CONFIG = {
   REPO_OWNER: 'your-username',    // 替换为您的 GitHub 用户名
   REPO_NAME: 'your-reponame',     // 替换为您的仓库名称
+  REPO_BRANCH: 'master'           // 替换为部署 GitHub Pages 的分支
   // ... 其他配置保持不变
 };
 ```
@@ -180,7 +221,7 @@ https://your-username.github.io/your-reponame/
 
 ### 步骤 6: 下载结果
 
-1. 工作流完成后，下载按钮将变为可用
+1. 工作流完成后，下载按钮显示且提示可下载文件名称
 2. 下载 **ikfast_solver.cpp** - 生成的求解器代码
 3. 下载 **build.log** - 完整的构建日志（用于调试）
 4. 将求解器代码集成到您的 MoveIt 配置中，[参考教程](https://fishros.org.cn/forum/topic/680/)
@@ -220,7 +261,7 @@ https://your-username.github.io/your-reponame/
 **解决方案**:
 - 确认 Token 具有仓库写入权限
 - 等待几分钟后重试（可能是速率限制，每小时 5000 次请求）
-- 检查 `docs/config.js` 中的 `REPO_OWNER` 和 `REPO_NAME` 是否正确
+- 检查 `docs/js/config.js` 中的 `REPO_OWNER` 、 `REPO_NAME` 以及 `REPO_BRANCH` 是否正确
 
 #### ❌ 工作流触发失败：422 Validation failed
 
@@ -333,6 +374,64 @@ python -m http.server 8080 --directory docs
 - **事件驱动**: 使用 CustomEvent 进行组件间通信
 - **错误处理**: 统一的错误处理机制
 - **状态管理**: 集中的应用状态管理
+- **模块化样式**: 分离的主题、核心、自定义和响应式样式
+- **UI 适配器**: 将现有功能模块适配到新 UI 设计
+
+## 🎨 UI 设计
+
+### Graphite 模板集成
+
+本项目采用 [Graphite Creative Studio](https://www.tooplate.com/) 模板的现代化设计风格，提供专业、清爽的用户体验。
+
+#### 设计特点
+
+- **浅色主题**: 白色背景，清爽明亮的配色方案
+- **响应式设计**: 完美适配桌面、平板和移动设备
+- **平滑动画**: 流畅的过渡效果和交互反馈
+- **可访问性**: 符合 WCAG AA 标准，支持键盘导航和屏幕阅读器
+- **性能优化**: 使用 CSS transform 和 opacity 实现高性能动画
+
+#### 样式系统
+
+项目采用模块化的样式架构：
+
+1. **graphite-theme.css**: 主题变量定义（颜色、字体、间距、阴影等）
+2. **graphite.css**: 核心样式（布局、组件、表单等）
+3. **custom.css**: 自定义扩展样式（特定功能模块）
+4. **responsive.css**: 响应式样式（移动端、平板、桌面）
+
+#### 修改样式指南
+
+如需自定义样式，请遵循以下原则：
+
+1. **修改主题变量**: 在 `docs/css/graphite-theme.css` 中修改 CSS 自定义属性
+   ```css
+   :root {
+     --primary-color: #0066cc;  /* 修改主色调 */
+     --bg-primary: #ffffff;     /* 修改背景色 */
+     /* ... 其他变量 */
+   }
+   ```
+
+2. **添加自定义样式**: 在 `docs/css/custom.css` 中添加新样式
+   ```css
+   /* 自定义按钮样式 */
+   .btn-custom {
+     background: var(--primary-color);
+     color: white;
+     /* ... */
+   }
+   ```
+
+3. **调整响应式断点**: 在 `docs/css/responsive.css` 中修改媒体查询
+   ```css
+   @media (max-width: 768px) {
+     /* 移动端样式 */
+   }
+   ```
+
+4. **保持一致性**: 始终使用主题变量而非硬编码颜色值
+5. **测试兼容性**: 修改后在不同设备和浏览器中测试
 
 ## 🤝 贡献指南
 
@@ -395,7 +494,7 @@ python -m http.server 8080 --directory docs
 - **执行时间**: 单次工作流最长 30 分钟
 - **Artifact 保留**: 生成的文件保留 7 天
 - **API 速率**: GitHub API 每小时 5000 次请求（已认证）
-- **并发限制**: 同一时间只能运行一个工作流
+- **并发限制**: 同一时间只能运行一个工作流，建议 Fork 仓库使用
 
 ## 📄 许可证
 
