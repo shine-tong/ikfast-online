@@ -134,3 +134,6 @@ Object.freeze(CONFIG.API_ENDPOINTS);
 if (typeof window !== 'undefined') {
     window.CONFIG = CONFIG;
 }
+
+// Export for ES6 modules
+export { CONFIG };

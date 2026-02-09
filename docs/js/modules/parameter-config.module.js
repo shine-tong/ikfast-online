@@ -3,6 +3,8 @@
  * ES Module version for testing
  */
 
+import { CONFIG } from '../config.js';
+
 export class ParameterConfigComponent {
     constructor() {
         this.parameters = {

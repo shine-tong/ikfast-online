@@ -4,6 +4,21 @@
  * Integrates all components and manages application state
  */
 
+// Import configuration
+import { CONFIG } from './config.js';
+
+// Import all required modules
+import { AuthenticationManager } from './modules/auth.module.js';
+import { GitHubAPIClient } from './modules/github-api.module.js';
+import { FileUploadComponent } from './modules/file-upload.module.js';
+import { LinkInfoComponent } from './modules/link-info.module.js';
+import { ParameterConfigComponent } from './modules/parameter-config.module.js';
+import { WorkflowTriggerComponent } from './modules/workflow-trigger.module.js';
+import { StatusMonitorComponent } from './modules/status-monitor.module.js';
+import { LogViewerComponent } from './modules/log-viewer.module.js';
+import { DownloadComponent } from './modules/download.module.js';
+import { GlobalErrorHandler } from './modules/error-handler.module.js';
+
 // Initialize AuthenticationManager
 const authManager = new AuthenticationManager();
 

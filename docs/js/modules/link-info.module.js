@@ -4,6 +4,8 @@
  * ES Module version for testing
  */
 
+import { CONFIG } from '../config.js';
+
 export class LinkInfoComponent {
     constructor(githubAPIClient) {
         this.githubAPIClient = githubAPIClient;

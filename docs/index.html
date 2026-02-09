@@ -336,17 +336,8 @@
     <!-- JSZip library for extracting files from ZIP artifacts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
-    <!-- Configuration -->
-    <script src="js/config.js?v=2"></script>
-    <script>
-        // Ensure CONFIG is loaded before proceeding
-        if (typeof CONFIG === 'undefined') {
-            console.error('CONFIG failed to load!');
-            alert('Configuration failed to load. Please refresh the page.');
-        } else {
-            console.log('CONFIG loaded successfully:', CONFIG.REPO_OWNER, CONFIG.REPO_NAME);
-        }
-    </script>
+    <!-- Configuration - now as module -->
+    <script src="js/config.js?v=2" type="module"></script>
     
     <!-- Existing Module Scripts - deferred for better performance -->
     <script src="js/modules/auth.module.js" type="module"></script>
@@ -367,7 +358,7 @@
     <script src="js/animations.js" defer></script>
     <script src="js/ui-adapter.js" defer></script>
     
-    <!-- Main Application Script - deferred -->
-    <script src="js/main.js" defer></script>
+    <!-- Main Application Script - module -->
+    <script src="js/main.js" type="module"></script>
 </body>
 </html>
