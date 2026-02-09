@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Main entry point for IKFast Online Generator
  * This file initializes the application and sets up event listeners
  * Integrates all components and manages application state
@@ -349,7 +349,7 @@ function handleLinkSelected(event) {
         showInfo(`Set as End Effector Link`);
     } else {
         // Let user decide - show both options
-        showInfo(`宸查€夋嫨閾炬帴: ${link.name} (index ${index})`);
+        showInfo(`Link selected: ${link.name} (index ${index})`);
     }
     
     // Update application state

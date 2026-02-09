@@ -182,14 +182,14 @@ export class AuthenticationManager {
         const token = this.elements.tokenInput.value.trim();
         
         if (!token) {
-            this.showError('璇疯緭鍏?GitHub Token');
+            this.showError('Please enter GitHub Token');
             return;
         }
         
         // Disable button and show loading state
         if (this.elements.authButton) {
             this.elements.authButton.disabled = true;
-            this.elements.authButton.textContent = '楠岃瘉涓?..';
+            this.elements.authButton.textContent = 'Verify涓?..';
         }
         
         try {
@@ -198,7 +198,7 @@ export class AuthenticationManager {
             if (result.valid) {
                 this.setToken(token);
                 this.scopes = result.scopes;
-                this.showSuccess('Token 楠岃瘉鎴愬姛');
+                this.showSuccess('Token Verify鎴愬姛');
                 this.updateUIState();
                 
                 // Trigger custom event for other components
@@ -207,18 +207,18 @@ export class AuthenticationManager {
                 }));
             } else {
                 this.clearToken();
-                this.showError(result.error || 'Token 楠岃瘉澶辫触');
+                this.showError(result.error || 'Token Verify澶辫触');
                 this.updateUIState();
             }
         } catch (error) {
             this.clearToken();
-            this.showError(`楠岃瘉澶辫触: ${error.message}`);
+            this.showError(`Verify澶辫触: ${error.message}`);
             this.updateUIState();
         } finally {
             // Re-enable button
             if (this.elements.authButton) {
                 this.elements.authButton.disabled = false;
-                this.elements.authButton.textContent = '楠岃瘉';
+                this.elements.authButton.textContent = 'Verify';
             }
         }
     }
@@ -236,7 +236,7 @@ export class AuthenticationManager {
                 this.elements.authSection.classList.add('authenticated');
             }
             if (this.elements.authButton) {
-                this.elements.authButton.textContent = '宸查獙璇?;
+                this.elements.authButton.textContent = 'Verified';
                 this.elements.authButton.classList.add('authenticated');
             }
         } else {
@@ -245,7 +245,7 @@ export class AuthenticationManager {
                 this.elements.authSection.classList.remove('authenticated');
             }
             if (this.elements.authButton) {
-                this.elements.authButton.textContent = '楠岃瘉';
+                this.elements.authButton.textContent = 'Verify';
                 this.elements.authButton.classList.remove('authenticated');
             }
         }

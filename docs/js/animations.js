@@ -1,11 +1,11 @@
-/**
- * AnimationManager - 管理页面动画效果
+﻿/**
+ * AnimationManager - Manages page animation effects
  * 
- * 负责处理滚动触发动画、悬停效果、页面加载动画等
+ * Handles scroll-triggered animations, hover effects, page load animations, etc.
  * Requirements: 7.1, 7.2, 7.3, 7.4
  * 
- * 性能优化：
- * - 使用事件委托处理悬停效果
+ * Performance optimization:
+ * - Use event delegation to handle hover effects
  * - 支持 prefers-reduced-motion
  */
 class AnimationManager {
@@ -15,7 +15,7 @@ class AnimationManager {
   }
   
   /**
-   * 初始化动画系统
+   * Initialize animation system
    */
   initialize() {
     this.setupScrollAnimations();
@@ -24,9 +24,9 @@ class AnimationManager {
   }
   
   /**
-   * 设置滚动触发的动画
+   * Setup scroll-triggered animations
    * Requirements: 7.2
-   * 如果用户偏好减少动画，则跳过
+   * Skip if user prefers reduced motion
    */
   setupScrollAnimations() {
     if (this.prefersReducedMotion) {
@@ -58,9 +58,9 @@ class AnimationManager {
   }
   
   /**
-   * 设置悬停效果
+   * Setup hover effects
    * Requirements: 7.1, 7.3
-   * 使用事件委托优化性能
+   * Use event delegation to optimize performance
    */
   setupHoverEffects() {
     if (this.prefersReducedMotion) {
@@ -84,7 +84,7 @@ class AnimationManager {
   }
   
   /**
-   * 设置页面加载动画
+   * Setup page load animations
    * Requirements: 7.2
    */
   setupLoadingAnimations() {

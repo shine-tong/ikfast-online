@@ -192,7 +192,7 @@ export class StatusMonitorComponent {
         if (this.elements.queuePosition && status === 'queued') {
             // GitHub API doesn't directly provide queue position
             // We can estimate based on other queued workflows
-            this.elements.queuePosition.textContent = '鎺掗槦涓?..';
+            this.elements.queuePosition.textContent = 'Queued...';
             this.elements.queuePosition.style.display = 'block';
         } else if (this.elements.queuePosition) {
             this.elements.queuePosition.style.display = 'none';
@@ -202,7 +202,7 @@ export class StatusMonitorComponent {
         if (this.elements.elapsedTime && this.startTime) {
             const elapsed = Date.now() - this.startTime;
             const elapsedText = this.formatElapsedTime(elapsed);
-            this.elements.elapsedTime.textContent = `宸茬敤鏃? ${elapsedText}`;
+            this.elements.elapsedTime.textContent = `Elapsed time ${elapsedText}`;
         }
         
         // Update run details if available
@@ -261,7 +261,7 @@ export class StatusMonitorComponent {
         this.updateStatusDisplay('failed');
         
         if (this.elements && this.elements.statusIndicator) {
-            this.elements.statusIndicator.textContent = '瓒呮椂锛?0鍒嗛挓锛?;
+            this.elements.statusIndicator.textContent = 'Timeout (30 minutes)';
         }
         
         if (this.onTimeout) {

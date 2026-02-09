@@ -63,7 +63,7 @@ export class FileUploadComponent {
         
         // Display file info
         if (this.elements.fileInfo) {
-            this.elements.fileInfo.textContent = `宸查€夋嫨: ${file.name} (${this.formatFileSize(file.size)})`;
+            this.elements.fileInfo.textContent = `Selected: ${file.name} (${this.formatFileSize(file.size)})`;
             this.elements.fileInfo.style.display = 'block';
         }
     }
@@ -140,7 +140,7 @@ export class FileUploadComponent {
         if (size === 0) {
             return {
                 valid: false,
-                error: '鏂囦欢涓虹┖'
+                error: 'File is empty┖'
             };
         }
         
@@ -275,7 +275,7 @@ export class FileUploadComponent {
      */
     async handleUpload() {
         if (!this.selectedFile) {
-            this.showError('璇峰厛閫夋嫨鏂囦欢');
+            this.showError('Please select a file first');
             return;
         }
         
@@ -283,7 +283,7 @@ export class FileUploadComponent {
             // Disable upload button
             if (this.elements.uploadButton) {
                 this.elements.uploadButton.disabled = true;
-                this.elements.uploadButton.textContent = '涓婁紶涓?..';
+                this.elements.uploadButton.textContent = 'Uploading...';
             }
             
             // Show progress bar
@@ -310,7 +310,7 @@ export class FileUploadComponent {
             this.showProgress(100);
             
             // Show success message
-            this.showSuccess('鏂囦欢涓婁紶鎴愬姛锛?);
+            this.showSuccess('File uploaded successfully!');
             
             // Trigger custom event for other components
             window.dispatchEvent(new CustomEvent('fileUploaded', {
@@ -349,7 +349,7 @@ export class FileUploadComponent {
             };
             
             reader.onerror = () => {
-                reject(new Error('鏂囦欢璇诲彇澶辫触'));
+                reject(new Error('File read failed'));
             };
             
             reader.readAsText(file);
@@ -387,7 +387,7 @@ export class FileUploadComponent {
         } catch (error) {
             // Re-throw with more context
             if (error.name === 'GitHubAPIError') {
-                throw new Error(`GitHub API 閿欒: ${error.apiMessage}`);
+                throw new Error(`GitHub API Error: ${error.apiMessage}`);
             } else if (error.name === 'NetworkError') {
                 throw new Error(CONFIG.ERROR_MESSAGES.NETWORK_ERROR);
             } else {
@@ -433,7 +433,7 @@ export class FileUploadComponent {
     resetUploadButton() {
         if (this.elements.uploadButton) {
             this.elements.uploadButton.disabled = false;
-            this.elements.uploadButton.textContent = '涓婁紶鏂囦欢';
+            this.elements.uploadButton.textContent = 'Upload File';
         }
     }
     

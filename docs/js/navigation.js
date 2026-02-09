@@ -1,15 +1,15 @@
-/**
- * NavigationManager - 管理页面导航功能
+﻿/**
+ * NavigationManager - Manages page navigation functionality
  * 
- * 功能：
- * - 平滑滚动到指定区域
- * - 滚动监听和导航高亮
- * - 移动端菜单切换
- * - 响应式导航行为
+ * Features:
+ * - Smooth scroll to specified sections
+ * - Scroll monitoring and navigation highlighting
+ * - Mobile menu toggle
+ * - Responsive navigation behavior
  * 
- * 性能优化：
- * - 使用事件委托减少监听器数量
- * - 防抖处理窗口调整大小事件
+ * Performance optimization:
+ * - Use event delegation to reduce number of listeners
+ * - Debounce window resize events
  */
 class NavigationManager {
   constructor() {
@@ -23,10 +23,10 @@ class NavigationManager {
   }
   
   /**
-   * 防抖函数 - 延迟执行函数直到停止调用一段时间后
-   * @param {Function} func - 要防抖的函数
-   * @param {number} wait - 等待时间（毫秒）
-   * @returns {Function} 防抖后的函数
+   * Debounce function - delays execution until calls stop for a period
+   * @param {Function} func - Function to debounce
+   * @param {number} wait - Wait time (milliseconds)
+   * @returns {Function} Debounced function
    */
   debounce(func, wait) {
     return (...args) => {
@@ -36,7 +36,7 @@ class NavigationManager {
   }
   
   /**
-   * 初始化导航组件
+   * Initialize navigation component
    */
   initialize() {
     this.navbar = document.querySelector('.navbar');
@@ -69,11 +69,11 @@ class NavigationManager {
   }
   
   /**
-   * 设置事件监听器
-   * 使用事件委托优化性能
+   * Setup event listeners
+   * Use event delegation to optimize performance
    */
   setupEventListeners() {
-    // 使用事件委托处理导航链接点击
+    // Use event delegation to handle navigation link clicks
     const menu = document.querySelector('.navbar-menu');
     if (menu) {
       menu.addEventListener('click', (e) => {
@@ -89,13 +89,13 @@ class NavigationManager {
       });
     }
     
-    // 移动端菜单切换
+    // Mobile menu toggle
     const toggler = document.querySelector('.navbar-toggler');
     if (toggler) {
       toggler.addEventListener('click', () => this.toggleMenu());
     }
     
-    // 窗口调整大小时关闭移动菜单（使用防抖）
+    // Close mobile menu on window resize (with debounce)
     const debouncedResize = this.debounce(() => {
       if (window.innerWidth > 768 && this.isMenuOpen) {
         this.toggleMenu();
@@ -106,8 +106,8 @@ class NavigationManager {
   }
   
   /**
-   * 平滑滚动到指定区域
-   * @param {string} sectionId - 目标区域的 ID
+   * Smooth scroll to specified sections
+   * @param {string} sectionId - Target section ID
    */
   scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
@@ -121,7 +121,7 @@ class NavigationManager {
   }
   
   /**
-   * 切换移动端菜单
+   * Toggle mobile menu
    */
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -140,7 +140,7 @@ class NavigationManager {
   }
   
   /**
-   * 设置滚动监听，高亮当前区域
+   * Setup scroll monitoring, highlight current section
    */
   setupScrollSpy() {
     if (!('IntersectionObserver' in window)) {
@@ -171,8 +171,8 @@ class NavigationManager {
   }
   
   /**
-   * 滚动监听后备方案（不支持 IntersectionObserver 时使用）
-   * 使用防抖优化性能
+   * Scroll monitoring fallback (used when IntersectionObserver is not supported)
+   * Use debounce to optimize performance
    */
   setupScrollSpyFallback() {
     let ticking = false;
@@ -190,7 +190,7 @@ class NavigationManager {
   }
   
   /**
-   * 更新活动区域（后备方案）
+   * Update active section (fallback)
    */
   updateActiveSectionFallback() {
     const scrollPosition = window.scrollY + this.navbar.offsetHeight + 100;
@@ -205,8 +205,8 @@ class NavigationManager {
   }
   
   /**
-   * 设置活动区域
-   * @param {string} sectionId - 区域 ID
+   * Set active section
+   * @param {string} sectionId - Section ID
    */
   setActiveSection(sectionId) {
     if (this.activeSection === sectionId) return;
@@ -223,7 +223,7 @@ class NavigationManager {
   }
   
   /**
-   * 销毁导航管理器
+   * Destroy navigation manager
    */
   destroy() {
     if (this.observer) {
@@ -235,7 +235,7 @@ class NavigationManager {
   }
 }
 
-// 导出为全局变量以便其他脚本使用
+// Export as global variable for use by other scripts
 if (typeof window !== 'undefined') {
   window.NavigationManager = NavigationManager;
 }

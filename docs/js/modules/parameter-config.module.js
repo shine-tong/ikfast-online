@@ -139,7 +139,7 @@ export class ParameterConfigComponent {
         if (value === null || value === undefined) {
             return {
                 valid: false,
-                error: '璇疯緭鍏ラ摼鎺ョ储寮?
+                error: 'Please enter link index'
             };
         }
         
@@ -147,7 +147,7 @@ export class ParameterConfigComponent {
         if (!Number.isInteger(value)) {
             return {
                 valid: false,
-                error: '閾炬帴绱㈠紩蹇呴』鏄暣鏁?
+                error: 'Link index must be an integer㈠Link index must be an integer』Link index must be an integerLink index must be an integer?'
             };
         }
         
@@ -155,7 +155,7 @@ export class ParameterConfigComponent {
         if (value < 0) {
             return {
                 valid: false,
-                error: '閾炬帴绱㈠紩蹇呴』鏄潪璐熸暣鏁?
+                error: 'Link index must be an integer㈠Link index must be an integer』Link index must be an integerLink index must be an integer?'
             };
         }
         
@@ -173,14 +173,14 @@ export class ParameterConfigComponent {
         if (!ikType || typeof ikType !== 'string') {
             return {
                 valid: false,
-                error: '璇烽€夋嫨 IK 绫诲瀷'
+                error: 'Please select IK type'
             };
         }
         
         if (!validTypes.includes(ikType)) {
             return {
                 valid: false,
-                error: '鏃犳晥鐨?IK 绫诲瀷'
+                error: 'Invalid IK type'
             };
         }
         
@@ -209,9 +209,9 @@ export class ParameterConfigComponent {
             valid = false;
         }
         
-        // Validate that base_link 鈮?ee_link
+        // Validate that base_link Link index must be an integer?ee_link
         if (valid && params.baseLink === params.eeLink) {
-            errors.general = '鍩哄骇閾炬帴鍜屾湯绔墽琛屽櫒閾炬帴涓嶈兘鐩稿悓';
+            errors.general = 'Link index must be an integerLink index must be an integer';
             valid = false;
         }
         

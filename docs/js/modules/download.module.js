@@ -90,7 +90,7 @@ export class DownloadComponent {
             // Show artifact expiration info
             if (this.elements.artifactInfo) {
                 const expiresAt = new Date(resultArtifact.expiresAt);
-                this.elements.artifactInfo.textContent = `Artifact 灏嗕簬 ${expiresAt.toLocaleString()} 杩囨湡`;
+                this.elements.artifactInfo.textContent = `Artifact expires at ${expiresAt.toLocaleString()} 杩囨湡`;
                 this.elements.artifactInfo.style.display = 'block';
             }
         }
@@ -194,7 +194,7 @@ export class DownloadComponent {
             // Show loading state
             if (this.elements.downloadSolverButton) {
                 this.elements.downloadSolverButton.disabled = true;
-                this.elements.downloadSolverButton.textContent = '涓嬭浇涓?..';
+                this.elements.downloadSolverButton.textContent = 'Downloading...';
             }
             
             // Download and extract
@@ -204,11 +204,11 @@ export class DownloadComponent {
             this.triggerDownload(blob, 'ikfast_solver.cpp');
             
             // Show success message
-            this.showSuccess('ikfast_solver.cpp 涓嬭浇鎴愬姛');
+            this.showSuccess('ikfast_solver.cpp downloaded successfully');
             
         } catch (error) {
             console.error('Solver download failed:', error);
-            this.showError(`涓嬭浇澶辫触: ${error.message}`);
+            this.showError(`Download failed: ${error.message}`);
         } finally {
             // Reset button state
             if (this.elements.downloadSolverButton) {
@@ -230,7 +230,7 @@ export class DownloadComponent {
             // Show loading state
             if (this.elements.downloadLogButton) {
                 this.elements.downloadLogButton.disabled = true;
-                this.elements.downloadLogButton.textContent = '涓嬭浇涓?..';
+                this.elements.downloadLogButton.textContent = 'Downloading...';
             }
             
             // Download and extract
@@ -244,7 +244,7 @@ export class DownloadComponent {
             
         } catch (error) {
             console.error('Log download failed:', error);
-            this.showError(`涓嬭浇澶辫触: ${error.message}`);
+            this.showError(`Download failed: ${error.message}`);
         } finally {
             // Reset button state
             if (this.elements.downloadLogButton) {

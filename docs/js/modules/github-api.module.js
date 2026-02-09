@@ -14,20 +14,7 @@ export class GitHubAPIClient {
     }
     
     /**
-     * Make a base request to GitHub API with authentication
-     * @param {string} endpoint - API endpoint (relative to base URL)
-     * @param {Object} options - Fetch options
-     * @returns {Promise<Response>}
-     * @private
-     */
-    async _makeRequest(endpoint, options = {}) {
-        const token = this.authManager.getToken();
-        
-        if (!token) {
-            throw new GitHubAPIError('Not authenticated', 401, 'No authentication token available');
-        }
-        
-        const url = endpoint.startsWith('http') ? endpoint : `${this.baseURL}${endpoint}`;
+     * Make a base request to GitHub API Error: `${this.baseURL}${endpoint}`;
         
         const headers = {
             'Authorization': `Bearer ${token}`,
@@ -428,7 +415,7 @@ export class GitHubAPIClient {
             totalMinutesUsed: usage.totalMinutesUsed,
             includedMinutes: usage.includedMinutes,
             message: shouldWarn 
-                ? `璀﹀憡: GitHub Actions 閰嶉宸蹭娇鐢?${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} 鍒嗛挓)`
+                ? `Warning: GitHub Actions quota used ${Math.round(usage.percentUsed * 100)}% (${usage.totalMinutesUsed}/${usage.includedMinutes} minutes)`
                 : ''
         };
     }
