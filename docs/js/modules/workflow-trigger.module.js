@@ -83,7 +83,7 @@ export class WorkflowTriggerComponent {
             const result = await this.githubAPIClient.triggerWorkflow(
                 CONFIG.WORKFLOW_FILE,
                 inputs,
-                'main'
+                CONFIG.REPO_BRANCH
             );
             
             if (result.success) {
