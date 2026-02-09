@@ -14,7 +14,20 @@ export class GitHubAPIClient {
     }
     
     /**
-     * Make a base request to GitHub API Error: `${this.baseURL}${endpoint}`;
+     * Make a base request to GitHub API
+     * @param {string} endpoint - API endpoint
+     * @param {Object} options - Fetch options
+     * @returns {Promise<Response>}
+     * @private
+     */
+    async _makeRequest(endpoint, options = {}) {
+        const token = this.authManager.getToken();
+        
+        if (!token) {
+            throw new GitHubAPIError('Not authenticated', 401, 'No authentication token available');
+        }
+        
+        const url = `${this.baseURL}${endpoint}`;
         
         const headers = {
             'Authorization': `Bearer ${token}`,

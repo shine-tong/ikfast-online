@@ -140,7 +140,7 @@ export class FileUploadComponent {
         if (size === 0) {
             return {
                 valid: false,
-                error: 'File is empty┖'
+                error: 'File is empty'
             };
         }
         
