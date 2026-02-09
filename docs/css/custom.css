@@ -1,0 +1,948 @@
+/**
+ * Custom Extension Styles
+ * Feature-specific styles, animations, and interaction effects
+ */
+
+/* ============================================
+   0. Accessibility Styles
+   ============================================ */
+
+/* Skip Navigation Link - Hidden */
+.skip-link {
+  display: none;
+}
+
+/* Enhanced Focus Indicators */
+*:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Specific focus styles for interactive elements */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+}
+
+/* Focus visible for keyboard navigation only */
+*:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+}
+
+/* Ensure buttons have visible focus */
+.btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+}
+
+/* Card focus for keyboard navigation */
+.card:focus-within {
+  box-shadow: var(--shadow-lg), 0 0 0 3px rgba(0, 102, 204, 0.2);
+}
+
+/* Navigation menu focus */
+.navbar-menu a:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  background-color: var(--bg-hover);
+}
+
+/* Form input focus */
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.15);
+  outline: none;
+}
+
+/* Checkbox and radio focus */
+.form-check-input:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Details/Summary focus */
+details summary:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  background-color: var(--bg-hover);
+}
+
+/* Link focus in content */
+.card-body a:focus-visible,
+.section-content a:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  background-color: rgba(0, 102, 204, 0.1);
+  border-radius: var(--border-radius-sm);
+}
+
+/* Image Accessibility */
+/* All images should have alt text. Decorative images should have alt="" */
+img:not([alt]) {
+  border: 3px solid var(--status-error);
+  outline: 2px dashed var(--status-error);
+}
+
+img[alt=""] {
+  /* Decorative images - no visual indicator needed */
+}
+
+/* Responsive images - optimized for performance */
+img {
+  max-width: 100%;
+  height: auto;
+  /* Lazy loading for better performance */
+  loading: lazy;
+}
+
+/* ============================================
+   1. Navigation Styles
+   ============================================ */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  background-color: var(--navbar-bg);
+  box-shadow: var(--navbar-shadow);
+  padding: var(--navbar-padding-y) var(--navbar-padding-x);
+  z-index: var(--z-sticky);
+  transition: var(--transition-normal);
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  height: 100%;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.navbar-brand h1 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  margin-top: 14px;
+}
+
+.navbar-menu li {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.navbar-menu a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-fast);
+  position: relative;
+}
+
+.navbar-menu a:hover {
+  color: var(--primary-color);
+  background-color: var(--bg-hover);
+}
+
+.navbar-menu a.active {
+  color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
+}
+
+.navbar-menu a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 3px;
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius-full);
+}
+
+.navbar-toggler {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: var(--z-fixed);
+}
+
+.navbar-toggler span {
+  width: 100%;
+  height: 3px;
+  background-color: var(--text-primary);
+  border-radius: var(--border-radius-full);
+  transition: var(--transition-fast);
+}
+
+.navbar-toggler.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.navbar-toggler.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-toggler.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Mobile navigation */
+@media (max-width: 767px) {
+  .navbar-toggler {
+    display: flex;
+  }
+  
+  .navbar-menu {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background-color: var(--bg-primary);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-md);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: var(--transition-normal);
+  }
+  
+  .navbar-menu.active {
+    max-height: 500px;
+    opacity: 1;
+  }
+  
+  .navbar-menu a {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+  }
+  
+  .navbar-menu a.active::after {
+    display: none;
+  }
+}
+
+/* ============================================
+   2. File Upload Styles
+   ============================================ */
+
+.drop-zone {
+  position: relative;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  background-color: var(--bg-secondary);
+  transition: var(--transition-normal);
+  cursor: pointer;
+}
+
+.drop-zone:hover {
+  border-color: var(--primary-color);
+  background-color: var(--bg-hover);
+}
+
+.drop-zone.drag-over {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+  opacity: 0.1;
+  transform: scale(1.02);
+}
+
+.drop-zone-icon {
+  font-size: var(--font-size-4xl);
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+.drop-zone-text {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.drop-zone-hint {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+/* Progress bar */
+.progress {
+  width: 100%;
+  height: 8px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+  margin-top: var(--spacing-sm);
+}
+
+/* Progress bar - uses transform for performance */
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+  border-radius: var(--border-radius-full);
+  transition: width var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  will-change: width;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-shimmer 1.5s infinite;
+  will-change: transform;
+}
+
+@keyframes progress-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ============================================
+   3. Status Monitor Styles
+   ============================================ */
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-indicator.status-queued {
+  background-color: var(--status-info-light);
+  color: var(--status-info);
+}
+
+.status-indicator.status-in-progress {
+  background-color: var(--status-warning-light);
+  color: var(--status-warning);
+}
+
+.status-indicator.status-completed {
+  background-color: var(--status-success-light);
+  color: var(--status-success);
+}
+
+.status-indicator.status-failed {
+  background-color: var(--status-error-light);
+  color: var(--status-error);
+}
+
+.status-icon {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-queued .status-icon {
+  background-color: var(--status-info);
+}
+
+.status-in-progress .status-icon {
+  background-color: var(--status-warning);
+}
+
+.status-completed .status-icon {
+  background-color: var(--status-success);
+  animation: none;
+}
+
+.status-failed .status-icon {
+  background-color: var(--status-error);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============================================
+   4. Log Viewer Styles
+   ============================================ */
+
+.log-viewer {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  max-height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  contain: strict;
+}
+
+.log-viewer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.log-viewer::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+.log-viewer::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--border-radius-sm);
+}
+
+.log-viewer::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.log-error {
+  color: var(--status-error);
+  font-weight: var(--font-weight-semibold);
+}
+
+.log-success {
+  color: var(--status-success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.log-warning {
+  color: var(--status-warning);
+  font-weight: var(--font-weight-semibold);
+}
+
+.log-step {
+  color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
+}
+
+.log-info {
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   5. Table Styles
+   ============================================ */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--spacing-md);
+}
+
+.table thead {
+  background-color: var(--bg-secondary);
+}
+
+.table th {
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.table td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.table tbody tr {
+  transition: var(--transition-fast);
+}
+
+.table tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+
+.table-striped tbody tr:nth-child(odd) {
+  background-color: var(--bg-secondary);
+}
+
+.table-bordered {
+  border: 1px solid var(--border-color);
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid var(--border-color);
+}
+
+/* ============================================
+   6. Animation Classes
+   ============================================ */
+
+/* Fade in animation - uses opacity and transform for performance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--animation-duration-normal) var(--animation-easing);
+  will-change: opacity, transform;
+}
+
+.fade-in.animated {
+  will-change: auto;
+}
+
+/* Slide in from left - uses transform for performance */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft var(--animation-duration-normal) var(--animation-easing);
+  will-change: opacity, transform;
+}
+
+.slide-in-left.animated {
+  will-change: auto;
+}
+
+/* Slide in from right - uses transform for performance */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight var(--animation-duration-normal) var(--animation-easing);
+  will-change: opacity, transform;
+}
+
+.slide-in-right.animated {
+  will-change: auto;
+}
+
+/* Scale up - uses transform and opacity for performance */
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-up {
+  animation: scaleUp var(--animation-duration-fast) var(--animation-easing);
+  will-change: opacity, transform;
+}
+
+.scale-up.animated {
+  will-change: auto;
+}
+
+/* Bounce - uses transform for performance */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce {
+  animation: bounce 1s infinite;
+  will-change: transform;
+}
+
+/* Spin - uses transform for performance */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+  will-change: transform;
+}
+
+/* ============================================
+   7. Hover and Focus Effects
+   ============================================ */
+
+/* Card hover effect - uses transform for performance */
+.card-interactive {
+  cursor: pointer;
+  transition: var(--transition-normal);
+  will-change: transform;
+}
+
+.card-interactive:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+}
+
+.card-interactive:active {
+  transform: translateY(-4px);
+}
+
+.card-interactive:not(:hover):not(:active) {
+  will-change: auto;
+}
+
+/* Button ripple effect */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Link underline animation - uses transform for performance */
+.link-animated {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-animated::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+  transition: width var(--transition-normal);
+  will-change: width;
+}
+
+.link-animated:hover::after {
+  width: 100%;
+}
+
+.link-animated:not(:hover)::after {
+  will-change: auto;
+}
+
+/* Focus ring */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-color), 0 0 0 5px rgba(0, 102, 204, 0.2);
+}
+
+/* Glow effect - uses box-shadow for performance */
+.glow {
+  box-shadow: 0 0 20px rgba(0, 102, 204, 0.5);
+  transition: var(--transition-normal);
+}
+
+.glow:hover {
+  box-shadow: 0 0 30px rgba(0, 102, 204, 0.7);
+}
+
+/* ============================================
+   8. Loading States
+   ============================================ */
+
+.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--primary-color);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 25%,
+    var(--bg-hover) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--border-radius-md);
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   9. Alert/Notification Styles
+   ============================================ */
+
+.alert {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid;
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.alert-success {
+  background-color: var(--status-success-light);
+  border-color: var(--status-success);
+  color: var(--status-success);
+}
+
+.alert-warning {
+  background-color: var(--status-warning-light);
+  border-color: var(--status-warning);
+  color: var(--status-warning);
+}
+
+.alert-error {
+  background-color: var(--status-error-light);
+  border-color: var(--status-error);
+  color: var(--status-error);
+}
+
+.alert-info {
+  background-color: var(--status-info-light);
+  border-color: var(--status-info);
+  color: var(--status-info);
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  font-size: var(--font-size-xl);
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-xs);
+}
+
+.alert-message {
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   10. Badge Styles
+   ============================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border-radius: var(--border-radius-full);
+  white-space: nowrap;
+}
+
+.badge-primary {
+  background-color: var(--primary-color);
+  color: var(--text-inverse);
+}
+
+.badge-secondary {
+  background-color: var(--secondary-color);
+  color: var(--text-inverse);
+}
+
+.badge-success {
+  background-color: var(--status-success);
+  color: var(--text-inverse);
+}
+
+.badge-warning {
+  background-color: var(--status-warning);
+  color: var(--text-primary);
+}
+
+.badge-error {
+  background-color: var(--status-error);
+  color: var(--text-inverse);
+}
+
+.badge-info {
+  background-color: var(--status-info);
+  color: var(--text-inverse);
+}
+
+/* ============================================
+   11. Tooltip Styles
+   ============================================ */
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  z-index: var(--z-tooltip);
+  opacity: 0;
+  transition: var(--transition-fast);
+}
+
+.tooltip-text::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--text-primary) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ============================================
+   12. Page Load Animation
+   ============================================ */
+
+body.loaded {
+  animation: fadeIn 0.5s ease-in;
+}
+
+body.loaded .section {
+  animation: fadeIn 0.8s ease-in;
+}
+
+/* Stagger animation for cards */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+.card:nth-child(6) { animation-delay: 0.6s; }
